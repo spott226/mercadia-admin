@@ -1,0 +1,181 @@
+/* ======================
+RESET BÁSICO
+====================== */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#f4f6f9;
+display:flex;
+min-height:100vh;
+}
+
+
+/* ======================
+SIDEBAR
+====================== */
+
+.sidebar{
+width:220px;
+background:#0f172a;
+color:white;
+padding:25px 20px;
+display:flex;
+flex-direction:column;
+}
+
+.sidebar h2{
+margin-bottom:30px;
+font-size:20px;
+}
+
+.sidebar a{
+color:#cbd5f5;
+text-decoration:none;
+margin-bottom:15px;
+font-size:14px;
+display:block;
+}
+
+.sidebar a:hover{
+color:white;
+}
+
+.sidebar button{
+margin-top:auto;
+background:#ef4444;
+border:none;
+padding:10px;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+
+/* ======================
+CONTENIDO
+====================== */
+
+.content{
+flex:1;
+padding:40px;
+}
+
+.content h1{
+margin-bottom:25px;
+font-size:24px;
+color:#111827;
+}
+
+
+/* ======================
+FORMULARIO
+====================== */
+
+.form{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+margin-bottom:25px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.form input{
+padding:10px;
+border:1px solid #ddd;
+border-radius:6px;
+font-size:14px;
+}
+
+.form input[type="file"]{
+padding:6px;
+}
+
+.form button{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 14px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.form button:hover{
+background:#1d4ed8;
+}
+
+
+/* ======================
+TABLA
+====================== */
+
+.table-container{
+background:white;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+overflow:hidden;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#f1f5f9;
+padding:14px;
+text-align:left;
+font-size:14px;
+}
+
+td{
+padding:12px;
+border-top:1px solid #eee;
+font-size:14px;
+}
+
+td img{
+border-radius:6px;
+}
+
+
+/* ======================
+BOTONES
+====================== */
+
+.btn-edit{
+background:#2563eb;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+margin-right:6px;
+font-size:12px;
+}
+
+.btn-edit:hover{
+background:#1d4ed8;
+}
+
+.btn-delete{
+background:#ef4444;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+font-size:12px;
+}
+
+.btn-delete:hover{
+background:#dc2626;
+}
