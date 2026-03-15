@@ -5,7 +5,7 @@ const API_URL = "https://mercadia-back-production.up.railway.app";
 const token = localStorage.getItem("token");
 const store_id = localStorage.getItem("store_id");
 
-if (!token) {
+if (!token || !store_id) {
 window.location = "login.html";
 }
 
