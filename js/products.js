@@ -1,5 +1,7 @@
 import { apiRequest } from "./api.js";
 
+const API_URL = "https://mercadia-back-production.up.railway.app";
+
 const token = localStorage.getItem("token");
 const store_id = localStorage.getItem("store_id");
 
@@ -24,7 +26,7 @@ table.innerHTML = "";
 data.forEach(p=>{
 
 const imageHTML = p.image
-? `<img src="http://localhost:3000/uploads/${p.image}" width="60">`
+? `<img src="${API_URL}/uploads/${p.image}" width="60">`
 : "";
 
 table.innerHTML += `
@@ -106,7 +108,7 @@ url = `/products/${editingProduct}`;
 method = "PUT";
 }
 
-await fetch(`http://localhost:3000/api${url}`,{
+await fetch(`${API_URL}/api${url}`,{
 method:method,
 headers:{
 Authorization:`Bearer ${token}`
