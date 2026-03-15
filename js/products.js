@@ -184,3 +184,7 @@ loadProducts();
 
 
 loadProducts();
+
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
+window.createProduct = createProduct;
