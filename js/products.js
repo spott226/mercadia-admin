@@ -10,8 +10,12 @@ if (!token || !store_id) {
 }
 
 let editingProduct = null;
-let currentImage = null;
-///
+
+
+
+/* =========================
+CARGAR PRODUCTOS
+========================= */
 
 async function loadProducts(){
 
@@ -49,8 +53,7 @@ async function loadProducts(){
           ${JSON.stringify(p.name || "")},
           ${JSON.stringify(p.description || "")},
           ${p.price || 0},
-          ${JSON.stringify(p.category || "")},
-          ${JSON.stringify(p.image || "")}
+          ${JSON.stringify(p.category || "")}
         )'>
         Editar
         </button>
@@ -76,6 +79,10 @@ async function loadProducts(){
 
 
 
+/* =========================
+CREAR / EDITAR PRODUCTO
+========================= */
+
 async function createProduct(){
 
   const name = document.getElementById("name").value;
@@ -99,9 +106,9 @@ async function createProduct(){
 
   const image = document.getElementById("image").files[0];
 
-if(image){
-  formData.append("image",image);
-}
+  if(image){
+    formData.append("image",image);
+  }
 
   let url = `/products`;
   let method = "POST";
@@ -120,7 +127,6 @@ if(image){
   });
 
   editingProduct = null;
-  currentImage = null;
 
   document.getElementById("product-form").reset();
   document.getElementById("save-btn").innerText="Agregar";
@@ -131,10 +137,13 @@ if(image){
 
 
 
-function editProduct(id,name,description,price,category,image){
+/* =========================
+EDITAR PRODUCTO
+========================= */
+
+function editProduct(id,name,description,price,category){
 
   editingProduct = id;
-  currentImage = image;
 
   document.getElementById("name").value=name;
   document.getElementById("description").value=description;
@@ -146,6 +155,10 @@ function editProduct(id,name,description,price,category,image){
 }
 
 
+
+/* =========================
+ELIMINAR PRODUCTO
+========================= */
 
 async function deleteProduct(id){
 
@@ -159,5 +172,19 @@ async function deleteProduct(id){
 }
 
 
+
+/* =========================
+EXPONER FUNCIONES AL HTML
+========================= */
+
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
+window.createProduct = createProduct;
+
+
+
+/* =========================
+INICIAR
+========================= */
 
 loadProducts();
