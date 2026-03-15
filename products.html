@@ -93,12 +93,20 @@ margin-bottom:25px;
 display:flex;
 flex-wrap:wrap;
 gap:10px;
+align-items:center;
 }
 
 .form-row input{
 padding:10px;
 border:1px solid #d1d5db;
 border-radius:6px;
+}
+
+.form-row label{
+display:flex;
+align-items:center;
+gap:6px;
+font-size:14px;
 }
 
 .form-row button{
@@ -161,6 +169,11 @@ background:#ef4444;
 color:white;
 }
 
+.featured{
+font-weight:bold;
+color:#16a34a;
+}
+
 </style>
 
 </head>
@@ -211,6 +224,11 @@ Gestión de productos
 
 <input id="category" placeholder="Categoría">
 
+<label>
+<input type="checkbox" id="featured">
+Destacado
+</label>
+
 <button id="save-btn" type="submit">
 Agregar
 </button>
@@ -234,6 +252,7 @@ Agregar
 <th>Precio</th>
 <th>Imagen</th>
 <th>Categoría</th>
+<th>⭐</th>
 <th>Acciones</th>
 </tr>
 
