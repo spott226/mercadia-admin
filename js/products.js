@@ -12,7 +12,6 @@ if (!token || !store_id) {
 let editingProduct = null;
 
 
-
 /* =========================
 CARGAR PRODUCTOS
 ========================= */
@@ -33,6 +32,8 @@ async function loadProducts(){
         ? `<img src="${API_URL}/uploads/${p.image}" width="60">`
         : "";
 
+      const featuredStar = p.featured ? "⭐" : "";
+
       table.innerHTML += `
       <tr>
 
@@ -46,6 +47,8 @@ async function loadProducts(){
 
         <td>${p.category || ""}</td>
 
+        <td>${featuredStar}</td>
+
         <td>
 
         <button onclick='editProduct(
@@ -53,7 +56,8 @@ async function loadProducts(){
           ${JSON.stringify(p.name || "")},
           ${JSON.stringify(p.description || "")},
           ${p.price || 0},
-          ${JSON.stringify(p.category || "")}
+          ${JSON.stringify(p.category || "")},
+          ${p.featured}
         )'>
         Editar
         </button>
@@ -78,7 +82,6 @@ async function loadProducts(){
 }
 
 
-
 /* =========================
 CREAR / EDITAR PRODUCTO
 ========================= */
@@ -89,7 +92,7 @@ async function createProduct(){
   const description = document.getElementById("description").value;
   const price = document.getElementById("price").value;
   const category = document.getElementById("category").value;
-  const featured = document.querySelector("input[type='checkbox']")?.checked;
+  const featured = document.getElementById("featured").checked;
 
   if(!name || !price){
     alert("Nombre y precio son obligatorios");
@@ -136,12 +139,11 @@ async function createProduct(){
 }
 
 
-
 /* =========================
 EDITAR PRODUCTO
 ========================= */
 
-function editProduct(id,name,description,price,category){
+function editProduct(id,name,description,price,category,featured){
 
   editingProduct = id;
 
@@ -149,11 +151,11 @@ function editProduct(id,name,description,price,category){
   document.getElementById("description").value=description;
   document.getElementById("price").value=price;
   document.getElementById("category").value=category;
+  document.getElementById("featured").checked=featured;
 
   document.getElementById("save-btn").innerText="Guardar cambios";
 
 }
-
 
 
 /* =========================
@@ -172,7 +174,6 @@ async function deleteProduct(id){
 }
 
 
-
 /* =========================
 EXPONER FUNCIONES AL HTML
 ========================= */
@@ -180,7 +181,6 @@ EXPONER FUNCIONES AL HTML
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
 window.createProduct = createProduct;
-
 
 
 /* =========================
