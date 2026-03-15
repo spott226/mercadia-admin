@@ -144,7 +144,9 @@ async function login(){
 const email = document.getElementById("email").value;
 const password = document.getElementById("password").value;
 
-const res = await fetch("http://localhost:3000/api/admin/login",{
+try{
+
+const res = await fetch("https://mercadia-back-production.up.railway.app/api/admin/login",{
 method:"POST",
 headers:{
 "Content-Type":"application/json"
@@ -164,6 +166,13 @@ window.location="dashboard.html";
 }else{
 
 document.getElementById("error").innerText="Credenciales incorrectas";
+
+}
+
+}catch(err){
+
+console.error(err);
+document.getElementById("error").innerText="Error conectando con el servidor";
 
 }
 
