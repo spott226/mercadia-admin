@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://mercadia-back-production.up.railway.app/api";
 
 export async function apiRequest(endpoint, method = "GET", body = null) {
 

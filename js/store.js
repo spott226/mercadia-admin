@@ -1,4 +1,4 @@
-const API = "http://localhost:3000/api";
+const API = "mercadia-back-production.up.railway.app";
 
 async function getStore() {
 
