@@ -26,6 +26,7 @@ color:white;
 padding:25px 20px;
 display:flex;
 flex-direction:column;
+flex-shrink:0;
 }
 
 .sidebar h2{
@@ -62,6 +63,7 @@ CONTENIDO
 .content{
 flex:1;
 padding:40px;
+min-width:0;
 }
 
 .content h1{
@@ -107,7 +109,9 @@ border-radius:6px;
 cursor:pointer;
 }
 
-.form button:hover
+.form button:hover{
+background:#1d4ed8;
+}
 
 /* ======================
 TABLA
@@ -159,7 +163,9 @@ margin-right:6px;
 font-size:12px;
 }
 
-.btn-edit:hover
+.btn-edit:hover{
+background:#1d4ed8;
+}
 
 .btn-delete{
 background:#ef4444;
@@ -171,7 +177,9 @@ cursor:pointer;
 font-size:12px;
 }
 
-.btn-delete:hover
+.btn-delete:hover{
+background:#dc2626;
+}
 
 /* ======================
 TABLET
@@ -196,33 +204,16 @@ MOVIL
 
 @media (max-width:700px){
 
-body{
-flex-direction:column;
-}
-
-/* sidebar se vuelve barra superior */
-
 .sidebar{
-width:100%;
-flex-direction:row;
-align-items:center;
-justify-content:space-between;
-padding:15px;
+width:80px;
+padding:15px 10px;
 }
 
 .sidebar h2{
-margin:0;
-font-size:18px;
+font-size:16px;
 }
 
 .sidebar a{
-margin:0 10px;
-font-size:13px;
-}
-
-.sidebar button{
-margin:0;
-padding:8px 10px;
 font-size:12px;
 }
 
@@ -230,18 +221,11 @@ font-size:12px;
 padding:20px 15px;
 }
 
-.content h1{
-font-size:20px;
-}
-
 .form{
 flex-direction:column;
 }
 
-.form input{
-width:100%;
-}
-
+.form input,
 .form button{
 width:100%;
 }
@@ -253,15 +237,6 @@ CELULARES PEQUEÑOS
 ====================== */
 
 @media (max-width:420px){
-
-.sidebar{
-flex-wrap:wrap;
-gap:10px;
-}
-
-.sidebar a{
-font-size:12px;
-}
 
 .content h1{
 font-size:18px;
