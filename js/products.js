@@ -11,7 +11,6 @@ if (!token || !store_id) {
 
 let editingProduct = null;
 
-
 /* =========================
 VARIANTES
 ========================= */
@@ -71,37 +70,12 @@ function renderVariants(){
 function removeVariant(index){
 
   variants.splice(index,1);
-
   renderVariants();
 
 }
 
 window.addVariant = addVariant;
 window.removeVariant = removeVariant;
-
-
-/* =========================
-SUBIR IMAGEN A CLOUDINARY
-========================= */
-
-async function uploadImage(file){
-
-  const form = new FormData();
-  form.append("image",file);
-
-  const res = await fetch(`${API_URL}/api/products`,{
-    method:"POST",
-    headers:{
-      Authorization:`Bearer ${token}`
-    },
-    body:form
-  });
-
-  const data = await res.json();
-
-  return data.image;
-
-}
 
 
 /* =========================
@@ -115,7 +89,6 @@ async function loadProducts(){
     const data = await apiRequest(`/products/${store_id}`);
 
     const table = document.getElementById("products-table");
-
     table.innerHTML = "";
 
     data.forEach(p=>{
@@ -201,30 +174,25 @@ async function createProduct(){
   formData.append("featured",featured);
 
   /* =========================
-  SUBIR IMAGENES DE VARIANTES
+  VARIANTES
   ========================= */
 
-  const variantsData = [];
+  if(variants.length){
 
-  for(let v of variants){
-
-    let imageUrl = null;
-
-    if(v.image){
-      imageUrl = await uploadImage(v.image);
-    }
-
-    variantsData.push({
+    const variantsData = variants.map(v => ({
       color:v.color,
       size:v.size,
-      price:v.price,
-      image:imageUrl
+      price:v.price
+    }));
+
+    formData.append("variants",JSON.stringify(variantsData));
+
+    variants.forEach(v=>{
+      if(v.image){
+        formData.append("variant_images",v.image);
+      }
     });
 
-  }
-
-  if(variantsData.length){
-    formData.append("variants",JSON.stringify(variantsData));
   }
 
   const image = document.getElementById("image").files[0];
