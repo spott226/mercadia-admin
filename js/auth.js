@@ -1,4 +1,8 @@
-const API = "mercadia-back-production.up.railway.app";
+const API = "https://mercadia-back-production.up.railway.app";
+
+/* =========================
+LOGIN
+========================= */
 
 async function login(){
 
@@ -25,7 +29,7 @@ if(data.token){
 localStorage.setItem("token",data.token);
 localStorage.setItem("store_id",data.store_id);
 
-window.location = "dashboard.html";
+window.location.href = "dashboard.html";
 
 }else{
 
@@ -42,23 +46,49 @@ alert("Error conectando con el servidor");
 
 }
 
+
+/* =========================
+LOGOUT
+========================= */
+
 function logout(){
 
 localStorage.removeItem("token");
 localStorage.removeItem("store_id");
 
-window.location = "login.html";
+window.location.href = "login.html";
 
 }
 
-// protección básica de páginas
+
+/* =========================
+PROTEGER PÁGINAS
+========================= */
+
 function protect(){
 
 const token = localStorage.getItem("token");
 
 if(!token){
 
-window.location = "login.html";
+window.location.href = "login.html";
+
+}
+
+}
+
+
+/* =========================
+EVITAR VOLVER AL LOGIN
+========================= */
+
+function checkLogin(){
+
+const token = localStorage.getItem("token");
+
+if(token){
+
+window.location.href = "dashboard.html";
 
 }
 

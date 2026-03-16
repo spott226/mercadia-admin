@@ -139,6 +139,21 @@ Mercadia Admin
 
 <script>
 
+/* =========================
+EVITAR VOLVER AL LOGIN
+========================= */
+
+const token = localStorage.getItem("token");
+
+if(token){
+window.location.href="dashboard.html";
+}
+
+
+/* =========================
+LOGIN
+========================= */
+
 async function login(){
 
 const email = document.getElementById("email").value;
@@ -161,7 +176,7 @@ if(data.token){
 localStorage.setItem("token",data.token);
 localStorage.setItem("store_id",data.store_id);
 
-window.location="dashboard.html";
+window.location.href="dashboard.html";
 
 }else{
 
