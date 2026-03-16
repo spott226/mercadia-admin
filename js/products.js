@@ -121,13 +121,20 @@ async function createProduct(){
     method = "PUT";
   }
 
-  await fetch(`${API_URL}/api${url}`,{
-    method:method,
-    headers:{
-      Authorization:`Bearer ${token}`
-    },
-    body:formData
-  });
+const res = await fetch(`${API_URL}/api${url}`,{
+  method:method,
+  headers:{
+    Authorization:`Bearer ${token}`
+  },
+  body:formData
+});
+
+if(!res.ok){
+  const err = await res.text();
+  console.error("Error backend:", err);
+  alert("Error al guardar producto");
+  return;
+}
 
   editingProduct = null;
 
