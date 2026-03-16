@@ -201,36 +201,49 @@ padding:25px;
 }
 
 /* ======================
-MOVIL
+MÓVIL
 ====================== */
 
 @media (max-width:700px){
 
+body{
+flex-direction:column;
+}
+
+/* Sidebar pasa arriba */
+
 .sidebar{
-width:70px;
-padding:15px 8px;
+width:100%;
+flex-direction:row;
+align-items:center;
+gap:15px;
+padding:12px 15px;
 }
 
 .sidebar h2{
-display:none;
+font-size:16px;
+margin-bottom:0;
 }
 
 .sidebar a{
-font-size:11px;
-text-align:center;
-margin-bottom:12px;
+margin-bottom:0;
+font-size:13px;
 }
 
 .sidebar button{
-font-size:11px;
-padding:8px;
+margin-left:auto;
+margin-top:0;
+padding:8px 12px;
 }
 
+/* Contenido */
+
 .content{
-padding:15px;
-flex:1;
+padding:20px 15px;
 width:100%;
 }
+
+/* Formulario vertical */
 
 .form{
 flex-direction:column;
@@ -240,6 +253,8 @@ flex-direction:column;
 .form button{
 width:100%;
 }
+
+/* Tabla con scroll */
 
 .table-container{
 overflow-x:auto;
@@ -262,11 +277,11 @@ font-size:18px;
 }
 
 .sidebar{
-width:65px;
+gap:10px;
 }
 
 .sidebar a{
-font-size:11px;
+font-size:12px;
 }
 
 }
