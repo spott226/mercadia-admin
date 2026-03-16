@@ -285,3 +285,43 @@ font-size:12px;
 }
 
 }
+
+@media (max-width:700px){
+
+body{
+display:block;
+}
+
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:200px;
+height:100vh;
+z-index:1000;
+}
+
+.content{
+margin-left:0;
+width:100%;
+padding:20px 15px;
+}
+
+.form{
+flex-direction:column;
+}
+
+.form input,
+.form button{
+width:100%;
+}
+
+.table-container{
+overflow-x:auto;
+}
+
+table{
+min-width:500px;
+}
+
+}
