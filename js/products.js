@@ -11,6 +11,69 @@ if (!token || !store_id) {
 
 let editingProduct = null;
 
+/* =========================
+VARIANTES
+========================= */
+
+let variants = [];
+
+function addVariant(){
+
+  const color = document.getElementById("variant-color").value;
+  const size = document.getElementById("variant-size").value;
+  const price = document.getElementById("variant-price").value;
+
+  if(!color || !size || !price){
+    alert("Completa color, talla y precio");
+    return;
+  }
+
+  variants.push({
+    color,
+    size,
+    price
+  });
+
+  renderVariants();
+
+  document.getElementById("variant-color").value="";
+  document.getElementById("variant-size").value="";
+  document.getElementById("variant-price").value="";
+
+}
+
+function renderVariants(){
+
+  const list = document.getElementById("variants-list");
+
+  if(!list) return;
+
+  list.innerHTML = "";
+
+  variants.forEach((v,i)=>{
+
+    list.innerHTML += `
+    <div>
+      ${v.color} / ${v.size} / $${v.price}
+      <button onclick="removeVariant(${i})">x</button>
+    </div>
+    `;
+
+  });
+
+}
+
+function removeVariant(index){
+
+  variants.splice(index,1);
+
+  renderVariants();
+
+}
+
+window.addVariant = addVariant;
+window.removeVariant = removeVariant;
+
 
 /* =========================
 CARGAR PRODUCTOS
@@ -107,6 +170,10 @@ async function createProduct(){
   formData.append("category",category);
   formData.append("featured",featured);
 
+  if(variants.length > 0){
+    formData.append("variants", JSON.stringify(variants));
+  }
+
   const image = document.getElementById("image").files[0];
 
   if(image){
@@ -137,6 +204,8 @@ if(!res.ok){
 }
 
   editingProduct = null;
+  variants = [];
+  renderVariants();
 
   document.getElementById("product-form").reset();
   document.getElementById("save-btn").innerText="Agregar";
