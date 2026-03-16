@@ -11,6 +11,7 @@ if (!token || !store_id) {
 
 let editingProduct = null;
 
+
 /* =========================
 VARIANTES
 ========================= */
@@ -77,6 +78,30 @@ function removeVariant(index){
 
 window.addVariant = addVariant;
 window.removeVariant = removeVariant;
+
+
+/* =========================
+SUBIR IMAGEN A CLOUDINARY
+========================= */
+
+async function uploadImage(file){
+
+  const form = new FormData();
+  form.append("image",file);
+
+  const res = await fetch(`${API_URL}/api/products`,{
+    method:"POST",
+    headers:{
+      Authorization:`Bearer ${token}`
+    },
+    body:form
+  });
+
+  const data = await res.json();
+
+  return data.image;
+
+}
 
 
 /* =========================
@@ -175,22 +200,31 @@ async function createProduct(){
   formData.append("category",category);
   formData.append("featured",featured);
 
-  if(variants.length > 0){
+  /* =========================
+  SUBIR IMAGENES DE VARIANTES
+  ========================= */
 
-    const variantsData = variants.map(v => ({
-      color: v.color,
-      size: v.size,
-      price: v.price
-    }));
+  const variantsData = [];
 
-    formData.append("variants", JSON.stringify(variantsData));
+  for(let v of variants){
 
-    variants.forEach((v,i)=>{
-      if(v.image){
-        formData.append(`variant_image_${i}`, v.image);
-      }
+    let imageUrl = null;
+
+    if(v.image){
+      imageUrl = await uploadImage(v.image);
+    }
+
+    variantsData.push({
+      color:v.color,
+      size:v.size,
+      price:v.price,
+      image:imageUrl
     });
 
+  }
+
+  if(variantsData.length){
+    formData.append("variants",JSON.stringify(variantsData));
   }
 
   const image = document.getElementById("image").files[0];
@@ -207,20 +241,20 @@ async function createProduct(){
     method = "PUT";
   }
 
-const res = await fetch(`${API_URL}/api${url}`,{
-  method:method,
-  headers:{
-    Authorization:`Bearer ${token}`
-  },
-  body:formData
-});
+  const res = await fetch(`${API_URL}/api${url}`,{
+    method:method,
+    headers:{
+      Authorization:`Bearer ${token}`
+    },
+    body:formData
+  });
 
-if(!res.ok){
-  const err = await res.text();
-  console.error("Error backend:", err);
-  alert("Error al guardar producto");
-  return;
-}
+  if(!res.ok){
+    const err = await res.text();
+    console.error("Error backend:", err);
+    alert("Error al guardar producto");
+    return;
+  }
 
   editingProduct = null;
   variants = [];
