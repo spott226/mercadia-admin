@@ -29,7 +29,7 @@ async function loadProducts(){
     data.forEach(p=>{
 
       const imageHTML = p.image
-        ? `<img src="${API_URL}/uploads/${p.image}" width="60">`
+        ? `<img src="${p.image}" width="60">`
         : "";
 
       const featuredStar = p.featured ? "⭐" : "";
