@@ -13,6 +13,8 @@ body{
 background:#f4f6f9;
 display:flex;
 min-height:100vh;
+width:100%;
+overflow-x:hidden;
 }
 
 /* ======================
@@ -205,8 +207,8 @@ MOVIL
 @media (max-width:700px){
 
 .sidebar{
-width:80px;
-padding:15px 10px;
+width:70px;
+padding:15px 8px;
 }
 
 .sidebar h2{
@@ -214,16 +216,20 @@ display:none;
 }
 
 .sidebar a{
-font-size:12px;
+font-size:11px;
 text-align:center;
+margin-bottom:12px;
 }
 
 .sidebar button{
-font-size:12px;
+font-size:11px;
+padding:8px;
 }
 
 .content{
-padding:20px 15px;
+padding:15px;
+flex:1;
+width:100%;
 }
 
 .form{
@@ -235,10 +241,12 @@ flex-direction:column;
 width:100%;
 }
 
-table{
-display:block;
+.table-container{
 overflow-x:auto;
-white-space:nowrap;
+}
+
+table{
+min-width:500px;
 }
 
 }
