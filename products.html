@@ -199,92 +199,6 @@ font-weight:bold;
 color:#16a34a;
 }
 
-/* TABLET */
-
-@media (max-width:900px){
-
-.sidebar{
-width:180px;
-padding:15px;
-}
-
-.content{
-padding:20px;
-}
-
-}
-
-/* MOBILE */
-
-@media (max-width:700px){
-
-body{
-display:block;
-}
-
-/* boton hamburguesa visible */
-
-.menu-toggle{
-display:block;
-}
-
-/* sidebar oculto */
-
-.sidebar{
-position:fixed;
-left:-240px;
-top:0;
-width:220px;
-height:100vh;
-z-index:1500;
-}
-
-.sidebar.open{
-left:0;
-}
-
-.logo{
-font-size:18px;
-}
-
-.menu a{
-font-size:14px;
-}
-
-.logout{
-font-size:13px;
-}
-
-/* contenido */
-
-.content{
-padding:60px 20px 20px 20px;
-}
-
-/* formulario vertical */
-
-.form-row{
-flex-direction:column;
-align-items:stretch;
-}
-
-.form-row input,
-.form-row button{
-width:100%;
-}
-
-}
-
-/* CELULARES PEQUEÑOS */
-
-@media (max-width:420px){
-
-.header{
-font-size:20px;
-}
-
-}
-
 </style>
 
 </head>
@@ -348,6 +262,7 @@ Agregar
 </div>
 
 </form>
+
 <!-- VARIANTES -->
 
 <div style="margin-top:20px;border-top:1px solid #e5e7eb;padding-top:15px;">
@@ -361,6 +276,9 @@ Agregar
 <input id="variant-size" placeholder="Talla">
 
 <input id="variant-price" type="number" placeholder="Precio variante">
+
+<!-- NUEVO INPUT PARA IMAGEN DE VARIANTE -->
+<input type="file" id="variant-image">
 
 <button type="button" onclick="addVariant()">
 Agregar variante

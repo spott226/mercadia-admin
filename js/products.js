@@ -22,6 +22,7 @@ function addVariant(){
   const color = document.getElementById("variant-color").value;
   const size = document.getElementById("variant-size").value;
   const price = document.getElementById("variant-price").value;
+  const imageInput = document.getElementById("variant-image");
 
   if(!color || !size || !price){
     alert("Completa color, talla y precio");
@@ -31,7 +32,8 @@ function addVariant(){
   variants.push({
     color,
     size,
-    price
+    price,
+    image: imageInput.files[0] || null
   });
 
   renderVariants();
@@ -39,6 +41,7 @@ function addVariant(){
   document.getElementById("variant-color").value="";
   document.getElementById("variant-size").value="";
   document.getElementById("variant-price").value="";
+  imageInput.value="";
 
 }
 
@@ -55,6 +58,7 @@ function renderVariants(){
     list.innerHTML += `
     <div>
       ${v.color} / ${v.size} / $${v.price}
+      ${v.image ? "📷" : ""}
       <button onclick="removeVariant(${i})">x</button>
     </div>
     `;
@@ -172,7 +176,21 @@ async function createProduct(){
   formData.append("featured",featured);
 
   if(variants.length > 0){
-    formData.append("variants", JSON.stringify(variants));
+
+    const variantsData = variants.map(v => ({
+      color: v.color,
+      size: v.size,
+      price: v.price
+    }));
+
+    formData.append("variants", JSON.stringify(variantsData));
+
+    variants.forEach((v,i)=>{
+      if(v.image){
+        formData.append(`variant_image_${i}`, v.image);
+      }
+    });
+
   }
 
   const image = document.getElementById("image").files[0];
