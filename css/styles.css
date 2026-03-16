@@ -243,3 +243,44 @@ font-size:18px;
 }
 
 }
+
+/* =========================
+RESPONSIVE
+========================= */
+
+@media (max-width: 768px){
+
+.sidebar{
+position:fixed;
+left:-220px;
+top:0;
+height:100%;
+z-index:1000;
+transition:.3s;
+}
+
+.sidebar.open{
+left:0;
+}
+
+.main{
+margin-left:0;
+padding:15px;
+}
+
+.form{
+padding:15px;
+}
+
+table{
+display:block;
+overflow-x:auto;
+white-space:nowrap;
+}
+
+input,
+button{
+width:100%;
+}
+
+}
