@@ -120,7 +120,8 @@ async function loadProducts(){
           ${JSON.stringify(p.description || "")},
           ${p.price || 0},
           ${JSON.stringify(p.category || "")},
-          ${p.featured}
+          ${p.featured},
+          ${JSON.stringify(p.variants || [])}
         )'>
         Editar
         </button>
@@ -219,7 +220,7 @@ if(!res.ok){
 EDITAR PRODUCTO
 ========================= */
 
-function editProduct(id,name,description,price,category,featured){
+function editProduct(id,name,description,price,category,featured,productVariants){
 
   editingProduct = id;
 
@@ -228,6 +229,9 @@ function editProduct(id,name,description,price,category,featured){
   document.getElementById("price").value=price;
   document.getElementById("category").value=category;
   document.getElementById("featured").checked=featured;
+
+  variants = productVariants || [];
+  renderVariants();
 
   document.getElementById("save-btn").innerText="Guardar cambios";
 
