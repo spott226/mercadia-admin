@@ -22,7 +22,7 @@ font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
 body{
 display:flex;
 background:#f1f5f9;
-height:100vh;
+min-height:100vh;
 }
 
 /* SIDEBAR */
@@ -34,6 +34,7 @@ color:white;
 display:flex;
 flex-direction:column;
 padding:20px;
+flex-shrink:0;
 }
 
 .logo{
@@ -72,6 +73,7 @@ cursor:pointer;
 flex:1;
 padding:30px;
 overflow:auto;
+min-width:0;
 }
 
 .header{
@@ -100,6 +102,7 @@ align-items:center;
 padding:10px;
 border:1px solid #d1d5db;
 border-radius:6px;
+min-width:150px;
 }
 
 .form-row label{
@@ -128,12 +131,13 @@ background:#1e40af;
 background:white;
 border-radius:10px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
-overflow:hidden;
+overflow-x:auto;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
+min-width:700px;
 }
 
 th,td{
@@ -172,6 +176,61 @@ color:white;
 .featured{
 font-weight:bold;
 color:#16a34a;
+}
+
+/* TABLET */
+
+@media (max-width:900px){
+
+.sidebar{
+width:180px;
+padding:15px;
+}
+
+.content{
+padding:20px;
+}
+
+}
+
+/* MOBILE */
+
+@media (max-width:600px){
+
+.sidebar{
+width:80px;
+padding:15px 10px;
+}
+
+.logo{
+font-size:14px;
+margin-bottom:20px;
+}
+
+.menu a{
+font-size:12px;
+padding:8px;
+}
+
+.logout{
+font-size:11px;
+padding:8px;
+}
+
+.header{
+font-size:20px;
+}
+
+.form-row{
+flex-direction:column;
+align-items:stretch;
+}
+
+.form-row input,
+.form-row button{
+width:100%;
+}
+
 }
 
 </style>
@@ -269,10 +328,6 @@ Agregar
 <script src="js/auth.js"></script>
 
 <script>
-
-/* =========================
-PROTEGER PÁGINA
-========================= */
 
 protect();
 
