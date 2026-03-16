@@ -12,6 +12,8 @@
 
 <style>
 
+/* RESET */
+
 *{
 margin:0;
 padding:0;
@@ -23,6 +25,24 @@ body{
 display:flex;
 background:#f1f5f9;
 min-height:100vh;
+overflow-x:hidden;
+}
+
+/* BOTON HAMBURGUESA */
+
+.menu-toggle{
+display:none;
+position:fixed;
+top:15px;
+left:15px;
+background:#0f172a;
+color:white;
+border:none;
+padding:10px 12px;
+border-radius:6px;
+font-size:20px;
+cursor:pointer;
+z-index:2000;
 }
 
 /* SIDEBAR */
@@ -35,6 +55,7 @@ display:flex;
 flex-direction:column;
 padding:20px;
 flex-shrink:0;
+transition:0.3s;
 }
 
 .logo{
@@ -106,27 +127,64 @@ padding:20px;
 
 /* MOBILE */
 
-@media (max-width:600px){
+@media (max-width:700px){
+
+body{
+display:block;
+}
+
+/* hamburguesa visible */
+
+.menu-toggle{
+display:block;
+}
+
+/* sidebar oculto */
 
 .sidebar{
-width:80px;
-padding:15px 10px;
+position:fixed;
+left:-240px;
+top:0;
+width:220px;
+height:100vh;
+z-index:1500;
+}
+
+.sidebar.open{
+left:0;
 }
 
 .logo{
-font-size:14px;
-margin-bottom:20px;
+font-size:18px;
 }
 
 .menu a{
-font-size:12px;
-padding:8px;
+font-size:14px;
 }
 
 .logout{
-font-size:11px;
-padding:8px;
+font-size:13px;
 }
+
+/* contenido */
+
+.content{
+padding:60px 20px 20px 20px;
+}
+
+.header{
+font-size:22px;
+}
+
+.card{
+padding:20px;
+}
+
+}
+
+/* CELULARES PEQUEÑOS */
+
+@media (max-width:420px){
 
 .header{
 font-size:20px;
@@ -143,6 +201,8 @@ padding:18px;
 </head>
 
 <body>
+
+<button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
 <div class="sidebar">
 
@@ -189,6 +249,18 @@ PROTEGER DASHBOARD
 ========================= */
 
 protect();
+
+/* =========================
+MENU HAMBURGUESA
+========================= */
+
+function toggleMenu(){
+
+const sidebar = document.querySelector(".sidebar");
+
+sidebar.classList.toggle("open");
+
+}
 
 </script>
 
