@@ -210,10 +210,15 @@ padding:15px 10px;
 }
 
 .sidebar h2{
-font-size:16px;
+display:none;
 }
 
 .sidebar a{
+font-size:12px;
+text-align:center;
+}
+
+.sidebar button{
 font-size:12px;
 }
 
@@ -230,6 +235,12 @@ flex-direction:column;
 width:100%;
 }
 
+table{
+display:block;
+overflow-x:auto;
+white-space:nowrap;
+}
+
 }
 
 /* ======================
@@ -242,45 +253,12 @@ CELULARES PEQUEÑOS
 font-size:18px;
 }
 
-}
-
-/* =========================
-RESPONSIVE
-========================= */
-
-@media (max-width: 768px){
-
 .sidebar{
-position:fixed;
-left:-220px;
-top:0;
-height:100%;
-z-index:1000;
-transition:.3s;
+width:65px;
 }
 
-.sidebar.open{
-left:0;
-}
-
-.main{
-margin-left:0;
-padding:15px;
-}
-
-.form{
-padding:15px;
-}
-
-table{
-display:block;
-overflow-x:auto;
-white-space:nowrap;
-}
-
-input,
-button{
-width:100%;
+.sidebar a{
+font-size:11px;
 }
 
 }
