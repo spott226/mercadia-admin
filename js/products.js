@@ -10,11 +10,12 @@ if (!token || !store_id) {
 }
 
 let editingProduct = null;
-let variants = [];
 
 /* =========================
 VARIANTES
 ========================= */
+
+let variants = [];
 
 function addVariant(){
 
@@ -24,18 +25,18 @@ function addVariant(){
   const imageInput = document.getElementById("variant-image");
 
   if(!color || !sizesInput || !price){
-    alert("Completa todo");
+    alert("Completa color, tallas y precio");
     return;
   }
 
   if(!imageInput.files[0]){
-    alert("Selecciona imagen");
+    alert("Selecciona imagen para ese color");
     return;
   }
 
   const exists = variants.find(v => v.color === color);
   if(exists){
-    alert("Color ya existe");
+    alert("Ese color ya fue agregado");
     return;
   }
 
@@ -59,16 +60,20 @@ function addVariant(){
 function renderVariants(){
 
   const list = document.getElementById("variants-list");
+  if(!list) return;
+
   list.innerHTML = "";
 
   variants.forEach((v,i)=>{
 
     list.innerHTML += `
-    <div>
+    <div style="margin-top:5px;">
       ${v.color} / ${v.sizes.join(",")} / $${v.price}
+      📷
       <button onclick="removeVariant(${i})">x</button>
     </div>
     `;
+
   });
 
 }
@@ -81,29 +86,93 @@ function removeVariant(index){
 window.addVariant = addVariant;
 window.removeVariant = removeVariant;
 
+
 /* =========================
-GUARDAR PRODUCTO
+CARGAR PRODUCTOS
+========================= */
+
+async function loadProducts(){
+
+  try{
+
+    const data = await apiRequest(`/products/${store_id}`);
+
+    const table = document.getElementById("products-table");
+    table.innerHTML = "";
+
+    data.forEach(p=>{
+
+      const imageHTML = p.image
+        ? `<img src="${p.image}" width="60">`
+        : "";
+
+      const featuredStar = p.featured ? "⭐" : "";
+
+      table.innerHTML += `
+      <tr>
+        <td>${p.name || ""}</td>
+        <td>${p.price || ""}</td>
+        <td>${imageHTML}</td>
+        <td>${featuredStar}</td>
+        <td>
+
+        <button onclick='editProduct(
+          ${p.id},
+          ${JSON.stringify(p.name || "")},
+          ${JSON.stringify(p.description || "")},
+          ${p.price || 0},
+          ${JSON.stringify(p.category || "")},
+          ${p.featured},
+          ${JSON.stringify(p.variants || [])}
+        )'>
+        Editar
+        </button>
+
+        <button onclick="deleteProduct(${p.id})">
+        Eliminar
+        </button>
+
+        </td>
+      </tr>
+      `;
+
+    });
+
+  }catch(err){
+    console.error("Error cargando productos",err);
+  }
+
+}
+
+
+/* =========================
+CREAR / EDITAR PRODUCTO
 ========================= */
 
 async function createProduct(){
 
   const name = document.getElementById("name").value;
+  const description = document.getElementById("description").value;
   const price = document.getElementById("price").value;
+  const category = document.getElementById("category").value;
+  const featured = document.getElementById("featured").checked;
 
   if(!name || !price){
-    alert("Faltan datos");
+    alert("Nombre y precio son obligatorios");
     return;
   }
 
   const formData = new FormData();
 
   formData.append("name",name);
-  formData.append("description",document.getElementById("description").value);
+  formData.append("description",description);
   formData.append("price",price);
-  formData.append("category",document.getElementById("category").value);
-  formData.append("featured",document.getElementById("featured").checked);
+  formData.append("category",category);
+  formData.append("featured",featured);
 
-  /* 🔥 VARIANTES */
+  /* =========================
+  VARIANTES
+  ========================= */
 
   let finalVariants = [];
 
@@ -111,32 +180,31 @@ async function createProduct(){
     v.sizes.forEach(size=>{
       finalVariants.push({
         color: v.color,
-        size,
+        size: size,
         price: v.price
       });
     });
   });
 
-  // 🔥 SI NO HAY VARIANTES → enviar vacío (esto es clave)
-  formData.append("variants", JSON.stringify(finalVariants));
+  // 🔥 SIEMPRE enviar (aunque esté vacío)
+  formData.append("variants",JSON.stringify(finalVariants));
 
   // 🔥 SOLO enviar imágenes si existen
-  const withImage = variants.filter(v => v.image);
-
-  withImage.forEach(v=>{
-    formData.append("color_images", v.image);
+  variants.forEach(v=>{
+    if(v.image){
+      formData.append("color_images", v.image);
+    }
   });
 
-  if(withImage.length){
+  if(variants.some(v=>v.image)){
     formData.append(
       "image_colors",
-      JSON.stringify(withImage.map(v => v.color))
+      JSON.stringify(variants.map(v => v.color))
     );
   }
 
-  /* IMAGEN PRINCIPAL */
-
   const image = document.getElementById("image").files[0];
+
   if(image){
     formData.append("image",image);
   }
@@ -150,25 +218,32 @@ async function createProduct(){
   }
 
   const res = await fetch(`${API_URL}/api${url}`,{
-    method,
-    headers:{ Authorization:`Bearer ${token}` },
+    method:method,
+    headers:{
+      Authorization:`Bearer ${token}`
+    },
     body:formData
   });
 
   if(!res.ok){
-    alert("Error");
+    alert("Error al guardar producto");
     return;
   }
 
   editingProduct = null;
   variants = [];
   renderVariants();
+
   document.getElementById("product-form").reset();
+  document.getElementById("save-btn").innerText="Agregar";
+
   loadProducts();
+
 }
 
+
 /* =========================
-EDITAR
+EDITAR PRODUCTO
 ========================= */
 
 function editProduct(id,name,description,price,category,featured,productVariants){
@@ -181,16 +256,15 @@ function editProduct(id,name,description,price,category,featured,productVariants
   document.getElementById("category").value=category;
   document.getElementById("featured").checked=featured;
 
-  // 🔥 reconstruir SIN imagen
   const grouped = {};
 
   productVariants.forEach(v=>{
     if(!grouped[v.color]){
       grouped[v.color] = {
-        color:v.color,
-        sizes:[],
-        price:v.price,
-        image:null
+        color: v.color,
+        sizes: [],
+        price: v.price,
+        image: null
       };
     }
     grouped[v.color].sizes.push(v.size);
@@ -199,48 +273,34 @@ function editProduct(id,name,description,price,category,featured,productVariants
   variants = Object.values(grouped);
 
   renderVariants();
+
+  document.getElementById("save-btn").innerText="Guardar cambios";
+
 }
 
+
 /* =========================
-ELIMINAR
+ELIMINAR PRODUCTO
 ========================= */
 
 async function deleteProduct(id){
 
-  if(!confirm("Eliminar?")) return;
+  const ok = confirm("¿Eliminar producto?");
+  if(!ok) return;
 
   await apiRequest(`/products/${id}`,"DELETE");
+
   loadProducts();
+
 }
+
 
 /* =========================
-LOAD
+INIT
 ========================= */
 
-async function loadProducts(){
-
-  const data = await apiRequest(`/products/${store_id}`);
-  const table = document.getElementById("products-table");
-
-  table.innerHTML = "";
-
-  data.forEach(p=>{
-    table.innerHTML += `
-    <tr>
-      <td>${p.name}</td>
-      <td>${p.price}</td>
-      <td>${p.image ? `<img src="${p.image}" width="60">` : ""}</td>
-      <td>
-        <button onclick='editProduct(${p.id},"${p.name}","${p.description}",${p.price},"${p.category}",${p.featured},${JSON.stringify(p.variants)})'>Editar</button>
-        <button onclick="deleteProduct(${p.id})">Eliminar</button>
-      </td>
-    </tr>
-    `;
-  });
-}
-
-window.createProduct = createProduct;
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
+window.createProduct = createProduct;
 
 loadProducts();
