@@ -12,7 +12,7 @@ if (!token || !store_id) {
 let editingProduct = null;
 
 /* =========================
-VARIANTES (AGRUPADAS POR COLOR)
+VARIANTES (CON IMAGEN)
 ========================= */
 
 let variants = [];
@@ -22,9 +22,22 @@ function addVariant(){
   const color = document.getElementById("variant-color").value;
   const sizesInput = document.getElementById("variant-size").value;
   const price = document.getElementById("variant-price").value;
+  const imageInput = document.getElementById("variant-image");
 
   if(!color || !sizesInput || !price){
     alert("Completa color, tallas y precio");
+    return;
+  }
+
+  if(!imageInput.files[0]){
+    alert("Selecciona imagen para ese color");
+    return;
+  }
+
+  // ❗ evitar colores duplicados
+  const exists = variants.find(v => v.color === color);
+  if(exists){
+    alert("Ese color ya fue agregado");
     return;
   }
 
@@ -33,7 +46,8 @@ function addVariant(){
   variants.push({
     color,
     sizes,
-    price
+    price,
+    image: imageInput.files[0]
   });
 
   renderVariants();
@@ -41,6 +55,7 @@ function addVariant(){
   document.getElementById("variant-color").value="";
   document.getElementById("variant-size").value="";
   document.getElementById("variant-price").value="";
+  imageInput.value="";
 }
 
 function renderVariants(){
@@ -53,8 +68,9 @@ function renderVariants(){
   variants.forEach((v,i)=>{
 
     list.innerHTML += `
-    <div>
+    <div style="margin-top:5px;">
       ${v.color} / ${v.sizes.join(",")} / $${v.price}
+      📷
       <button onclick="removeVariant(${i})">x</button>
     </div>
     `;
@@ -96,10 +112,8 @@ async function loadProducts(){
       table.innerHTML += `
       <tr>
         <td>${p.name || ""}</td>
-        <td>${p.description || ""}</td>
         <td>${p.price || ""}</td>
         <td>${imageHTML}</td>
-        <td>${p.category || ""}</td>
         <td>${featuredStar}</td>
         <td>
 
@@ -177,24 +191,16 @@ async function createProduct(){
 
     formData.append("variants",JSON.stringify(finalVariants));
 
-    // 🔥 colores para mapear imágenes
-    const colors = variants.map(v => v.color);
-    formData.append("image_colors", JSON.stringify(colors));
-  }
-
-  /* =========================
-  IMÁGENES POR COLOR
-  ========================= */
-
-  const colorImagesInput = document.getElementById("color-images");
-
-  if(colorImagesInput && colorImagesInput.files.length){
-
-    const files = [...colorImagesInput.files];
-
-    files.forEach(file=>{
-      formData.append("color_images", file);
+    // 🔥 IMÁGENES POR COLOR
+    variants.forEach(v=>{
+      formData.append("color_images", v.image);
     });
+
+    // 🔥 MAPEO COLOR → IMAGEN
+    formData.append(
+      "image_colors",
+      JSON.stringify(variants.map(v => v.color))
+    );
 
   }
 
@@ -244,7 +250,7 @@ async function createProduct(){
 
 
 /* =========================
-EDITAR PRODUCTO 🔥 FIX
+EDITAR PRODUCTO
 ========================= */
 
 function editProduct(id,name,description,price,category,featured,productVariants){

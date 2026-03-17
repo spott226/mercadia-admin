@@ -27,22 +27,6 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
-/* BOTON HAMBURGUESA */
-.menu-toggle{
-display:none;
-position:fixed;
-top:15px;
-left:15px;
-background:#0f172a;
-color:white;
-border:none;
-padding:10px 12px;
-border-radius:6px;
-font-size:20px;
-cursor:pointer;
-z-index:2000;
-}
-
 /* SIDEBAR */
 .sidebar{
 width:230px;
@@ -51,8 +35,6 @@ color:white;
 display:flex;
 flex-direction:column;
 padding:20px;
-flex-shrink:0;
-transition:0.3s;
 }
 
 .logo{
@@ -89,13 +71,6 @@ cursor:pointer;
 .content{
 flex:1;
 padding:30px;
-overflow:auto;
-min-width:0;
-}
-
-.header{
-font-size:24px;
-margin-bottom:20px;
 }
 
 /* FORM */
@@ -118,14 +93,6 @@ align-items:center;
 padding:10px;
 border:1px solid #d1d5db;
 border-radius:6px;
-min-width:150px;
-}
-
-.form-row label{
-display:flex;
-align-items:center;
-gap:6px;
-font-size:14px;
 }
 
 .form-row button{
@@ -137,8 +104,15 @@ border-radius:6px;
 cursor:pointer;
 }
 
-.form-row button:hover{
-background:#1e40af;
+/* VARIANTES */
+.variant-item{
+background:#f8fafc;
+padding:10px;
+border-radius:6px;
+margin-top:8px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 /* TABLE */
@@ -152,45 +126,16 @@ overflow-x:auto;
 table{
 width:100%;
 border-collapse:collapse;
-min-width:700px;
 }
 
 th,td{
 padding:12px;
 border-bottom:1px solid #e5e7eb;
-text-align:left;
-}
-
-th{
-background:#f8fafc;
 }
 
 img{
 width:60px;
 border-radius:6px;
-}
-
-.actions button{
-padding:6px 10px;
-border:none;
-border-radius:4px;
-cursor:pointer;
-margin-right:5px;
-}
-
-.edit{
-background:#2563eb;
-color:white;
-}
-
-.delete{
-background:#ef4444;
-color:white;
-}
-
-.featured{
-font-weight:bold;
-color:#16a34a;
 }
 
 </style>
@@ -199,32 +144,23 @@ color:#16a34a;
 
 <body>
 
-<button class="menu-toggle" onclick="toggleMenu()">☰</button>
-
 <div class="sidebar">
 
-<div class="logo">
-Mercadia
-</div>
+<div class="logo">Mercadia</div>
 
 <div class="menu">
 <a href="dashboard.html">Dashboard</a>
 <a href="products.html">Productos</a>
 </div>
 
-<button class="logout" onclick="logout()">
-Cerrar sesión
-</button>
+<button class="logout" onclick="logout()">Cerrar sesión</button>
 
 </div>
 
 
 <div class="content">
 
-<div class="header">
-Gestión de productos
-</div>
-
+<h2>Gestión de productos</h2>
 
 <div class="form-card">
 
@@ -243,13 +179,10 @@ Gestión de productos
 <input id="category" placeholder="Categoría">
 
 <label>
-<input type="checkbox" id="featured">
-Destacado
+<input type="checkbox" id="featured"> Destacado
 </label>
 
-<button id="save-btn" type="submit">
-Agregar
-</button>
+<button id="save-btn" type="submit">Agregar</button>
 
 </div>
 
@@ -257,11 +190,11 @@ Agregar
 
 <!-- VARIANTES -->
 
-<div style="margin-top:20px;border-top:1px solid #e5e7eb;padding-top:15px;">
+<div style="margin-top:20px;">
 
-<h3>Variantes</h3>
+<h3>Variantes (1 imagen por color)</h3>
 
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
+<div class="form-row">
 
 <input id="variant-color" placeholder="Color (ej: rojo)">
 
@@ -269,27 +202,15 @@ Agregar
 
 <input id="variant-price" type="number" placeholder="Precio variante">
 
+<input type="file" id="variant-image">
+
 <button type="button" onclick="addVariant()">
 Agregar variante
 </button>
 
 </div>
 
-<div id="variants-list" style="margin-top:10px;font-size:14px;"></div>
-
-</div>
-
-<!-- IMÁGENES POR COLOR -->
-
-<div style="margin-top:20px;border-top:1px solid #e5e7eb;padding-top:15px;">
-
-<h3>Imágenes por color</h3>
-
-<input type="file" id="color-images" multiple>
-
-<p style="font-size:12px;color:#666;margin-top:5px;">
-Sube una imagen por cada color en el mismo orden que agregaste las variantes.
-</p>
+<div id="variants-list"></div>
 
 </div>
 
@@ -303,11 +224,8 @@ Sube una imagen por cada color en el mismo orden que agregaste las variantes.
 <thead>
 <tr>
 <th>Nombre</th>
-<th>Descripción</th>
 <th>Precio</th>
 <th>Imagen</th>
-<th>Categoría</th>
-<th>⭐</th>
 <th>Acciones</th>
 </tr>
 </thead>
@@ -320,18 +238,7 @@ Sube una imagen por cada color en el mismo orden que agregaste las variantes.
 
 </div>
 
-
 <script src="js/auth.js"></script>
-
-<script>
-protect();
-
-function toggleMenu(){
-const sidebar = document.querySelector(".sidebar");
-sidebar.classList.toggle("open");
-}
-</script>
-
 <script type="module" src="js/products.js"></script>
 
 </body>
