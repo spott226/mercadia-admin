@@ -13,7 +13,6 @@
 <style>
 
 /* RESET */
-
 *{
 margin:0;
 padding:0;
@@ -29,7 +28,6 @@ overflow-x:hidden;
 }
 
 /* BOTON HAMBURGUESA */
-
 .menu-toggle{
 display:none;
 position:fixed;
@@ -46,7 +44,6 @@ z-index:2000;
 }
 
 /* SIDEBAR */
-
 .sidebar{
 width:230px;
 background:#0f172a;
@@ -89,7 +86,6 @@ cursor:pointer;
 }
 
 /* CONTENT */
-
 .content{
 flex:1;
 padding:30px;
@@ -103,7 +99,6 @@ margin-bottom:20px;
 }
 
 /* FORM */
-
 .form-card{
 background:white;
 padding:20px;
@@ -147,7 +142,6 @@ background:#1e40af;
 }
 
 /* TABLE */
-
 .table-card{
 background:white;
 border-radius:10px;
@@ -214,10 +208,8 @@ Mercadia
 </div>
 
 <div class="menu">
-
 <a href="dashboard.html">Dashboard</a>
 <a href="products.html">Productos</a>
-
 </div>
 
 <button class="logout" onclick="logout()">
@@ -271,14 +263,11 @@ Agregar
 
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;">
 
-<input id="variant-color" placeholder="Color">
+<input id="variant-color" placeholder="Color (ej: rojo)">
 
-<input id="variant-size" placeholder="Talla">
+<input id="variant-size" placeholder="Tallas (ej: S,M,L)">
 
 <input id="variant-price" type="number" placeholder="Precio variante">
-
-<!-- NUEVO INPUT PARA IMAGEN DE VARIANTE -->
-<input type="file" id="variant-image">
 
 <button type="button" onclick="addVariant()">
 Agregar variante
@@ -290,6 +279,20 @@ Agregar variante
 
 </div>
 
+<!-- IMÁGENES POR COLOR -->
+
+<div style="margin-top:20px;border-top:1px solid #e5e7eb;padding-top:15px;">
+
+<h3>Imágenes por color</h3>
+
+<input type="file" id="color-images" multiple>
+
+<p style="font-size:12px;color:#666;margin-top:5px;">
+Sube una imagen por cada color en el mismo orden que agregaste las variantes.
+</p>
+
+</div>
+
 </div>
 
 
@@ -298,7 +301,6 @@ Agregar variante
 <table>
 
 <thead>
-
 <tr>
 <th>Nombre</th>
 <th>Descripción</th>
@@ -308,7 +310,6 @@ Agregar variante
 <th>⭐</th>
 <th>Acciones</th>
 </tr>
-
 </thead>
 
 <tbody id="products-table"></tbody>
@@ -323,14 +324,12 @@ Agregar variante
 <script src="js/auth.js"></script>
 
 <script>
-
 protect();
 
 function toggleMenu(){
 const sidebar = document.querySelector(".sidebar");
 sidebar.classList.toggle("open");
 }
-
 </script>
 
 <script type="module" src="js/products.js"></script>

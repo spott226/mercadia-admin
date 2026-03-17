@@ -20,9 +20,8 @@ let variants = [];
 function addVariant(){
 
   const color = document.getElementById("variant-color").value;
-  const sizesInput = document.getElementById("variant-size").value; // ej: S,M,L
+  const sizesInput = document.getElementById("variant-size").value;
   const price = document.getElementById("variant-price").value;
-  const imageInput = document.getElementById("variant-image");
 
   if(!color || !sizesInput || !price){
     alert("Completa color, tallas y precio");
@@ -31,13 +30,10 @@ function addVariant(){
 
   const sizes = sizesInput.split(",").map(s => s.trim());
 
-  const images = [...imageInput.files]; // múltiples imágenes
-
   variants.push({
     color,
     sizes,
-    price,
-    images
+    price
   });
 
   renderVariants();
@@ -45,8 +41,6 @@ function addVariant(){
   document.getElementById("variant-color").value="";
   document.getElementById("variant-size").value="";
   document.getElementById("variant-price").value="";
-  imageInput.value="";
-
 }
 
 function renderVariants(){
@@ -61,7 +55,6 @@ function renderVariants(){
     list.innerHTML += `
     <div>
       ${v.color} / ${v.sizes.join(",")} / $${v.price}
-      ${v.images.length ? "📷 "+v.images.length : ""}
       <button onclick="removeVariant(${i})">x</button>
     </div>
     `;
@@ -165,7 +158,7 @@ async function createProduct(){
   formData.append("featured",featured);
 
   /* =========================
-  VARIANTES (expandimos tallas)
+  VARIANTES
   ========================= */
 
   if(variants.length){
@@ -173,7 +166,6 @@ async function createProduct(){
     let finalVariants = [];
 
     variants.forEach(v=>{
-
       v.sizes.forEach(size=>{
         finalVariants.push({
           color: v.color,
@@ -181,19 +173,34 @@ async function createProduct(){
           price: v.price
         });
       });
-
     });
 
     formData.append("variants",JSON.stringify(finalVariants));
 
-    // IMÁGENES (una vez por color, no por talla)
-    variants.forEach(v=>{
-      v.images.forEach(img=>{
-        formData.append("variant_images", img);
-      });
+    // 🔥 colores para mapear imágenes
+    const colors = variants.map(v => v.color);
+    formData.append("image_colors", JSON.stringify(colors));
+  }
+
+  /* =========================
+  IMÁGENES POR COLOR
+  ========================= */
+
+  const colorImagesInput = document.getElementById("color-images");
+
+  if(colorImagesInput && colorImagesInput.files.length){
+
+    const files = [...colorImagesInput.files];
+
+    files.forEach(file=>{
+      formData.append("color_images", file);
     });
 
   }
+
+  /* =========================
+  IMAGEN PRINCIPAL
+  ========================= */
 
   const image = document.getElementById("image").files[0];
 
@@ -237,7 +244,7 @@ async function createProduct(){
 
 
 /* =========================
-EDITAR PRODUCTO
+EDITAR PRODUCTO 🔥 FIX
 ========================= */
 
 function editProduct(id,name,description,price,category,featured,productVariants){
@@ -250,7 +257,22 @@ function editProduct(id,name,description,price,category,featured,productVariants
   document.getElementById("category").value=category;
   document.getElementById("featured").checked=featured;
 
-  variants = productVariants || [];
+  // 🔥 AGRUPAR POR COLOR
+  const grouped = {};
+
+  productVariants.forEach(v=>{
+    if(!grouped[v.color]){
+      grouped[v.color] = {
+        color: v.color,
+        sizes: [],
+        price: v.price
+      };
+    }
+    grouped[v.color].sizes.push(v.size);
+  });
+
+  variants = Object.values(grouped);
+
   renderVariants();
 
   document.getElementById("save-btn").innerText="Guardar cambios";
