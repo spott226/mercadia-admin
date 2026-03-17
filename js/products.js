@@ -12,7 +12,7 @@ if (!token || !store_id) {
 let editingProduct = null;
 
 /* =========================
-VARIANTES
+VARIANTES (AGRUPADAS POR COLOR)
 ========================= */
 
 let variants = [];
@@ -20,20 +20,24 @@ let variants = [];
 function addVariant(){
 
   const color = document.getElementById("variant-color").value;
-  const size = document.getElementById("variant-size").value;
+  const sizesInput = document.getElementById("variant-size").value; // ej: S,M,L
   const price = document.getElementById("variant-price").value;
   const imageInput = document.getElementById("variant-image");
 
-  if(!color || !size || !price){
-    alert("Completa color, talla y precio");
+  if(!color || !sizesInput || !price){
+    alert("Completa color, tallas y precio");
     return;
   }
 
+  const sizes = sizesInput.split(",").map(s => s.trim());
+
+  const images = [...imageInput.files]; // múltiples imágenes
+
   variants.push({
     color,
-    size,
+    sizes,
     price,
-    image: imageInput.files[0] || null
+    images
   });
 
   renderVariants();
@@ -48,7 +52,6 @@ function addVariant(){
 function renderVariants(){
 
   const list = document.getElementById("variants-list");
-
   if(!list) return;
 
   list.innerHTML = "";
@@ -57,8 +60,8 @@ function renderVariants(){
 
     list.innerHTML += `
     <div>
-      ${v.color} / ${v.size} / $${v.price}
-      ${v.image ? "📷" : ""}
+      ${v.color} / ${v.sizes.join(",")} / $${v.price}
+      ${v.images.length ? "📷 "+v.images.length : ""}
       <button onclick="removeVariant(${i})">x</button>
     </div>
     `;
@@ -68,10 +71,8 @@ function renderVariants(){
 }
 
 function removeVariant(index){
-
   variants.splice(index,1);
   renderVariants();
-
 }
 
 window.addVariant = addVariant;
@@ -101,19 +102,12 @@ async function loadProducts(){
 
       table.innerHTML += `
       <tr>
-
         <td>${p.name || ""}</td>
-
         <td>${p.description || ""}</td>
-
         <td>${p.price || ""}</td>
-
         <td>${imageHTML}</td>
-
         <td>${p.category || ""}</td>
-
         <td>${featuredStar}</td>
-
         <td>
 
         <button onclick='editProduct(
@@ -133,16 +127,13 @@ async function loadProducts(){
         </button>
 
         </td>
-
       </tr>
       `;
 
     });
 
   }catch(err){
-
     console.error("Error cargando productos",err);
-
   }
 
 }
@@ -174,23 +165,32 @@ async function createProduct(){
   formData.append("featured",featured);
 
   /* =========================
-  VARIANTES
+  VARIANTES (expandimos tallas)
   ========================= */
 
   if(variants.length){
 
-    const variantsData = variants.map(v => ({
-      color:v.color,
-      size:v.size,
-      price:v.price
-    }));
-
-    formData.append("variants",JSON.stringify(variantsData));
+    let finalVariants = [];
 
     variants.forEach(v=>{
-      if(v.image){
-        formData.append("variant_images",v.image);
-      }
+
+      v.sizes.forEach(size=>{
+        finalVariants.push({
+          color: v.color,
+          size: size,
+          price: v.price
+        });
+      });
+
+    });
+
+    formData.append("variants",JSON.stringify(finalVariants));
+
+    // IMÁGENES (una vez por color, no por talla)
+    variants.forEach(v=>{
+      v.images.forEach(img=>{
+        formData.append("variant_images", img);
+      });
     });
 
   }
@@ -275,16 +275,11 @@ async function deleteProduct(id){
 
 
 /* =========================
-EXPONER FUNCIONES AL HTML
+INIT
 ========================= */
 
 window.editProduct = editProduct;
 window.deleteProduct = deleteProduct;
 window.createProduct = createProduct;
-
-
-/* =========================
-INICIAR
-========================= */
 
 loadProducts();
