@@ -13,6 +13,7 @@
 <style>
 
 /* RESET */
+
 *{
 margin:0;
 padding:0;
@@ -27,7 +28,9 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
+
 /* SIDEBAR */
+
 .sidebar{
 width:230px;
 background:#0f172a;
@@ -35,6 +38,7 @@ color:white;
 display:flex;
 flex-direction:column;
 padding:20px;
+flex-shrink:0;
 }
 
 .logo{
@@ -50,6 +54,7 @@ color:#cbd5f5;
 text-decoration:none;
 border-radius:6px;
 margin-bottom:6px;
+transition:0.2s;
 }
 
 .menu a:hover{
@@ -67,17 +72,28 @@ border-radius:6px;
 cursor:pointer;
 }
 
+
 /* CONTENT */
+
 .content{
 flex:1;
 padding:30px;
+min-width:0;
 }
 
+.page-title{
+font-size:28px;
+font-weight:600;
+margin-bottom:25px;
+}
+
+
 /* FORM */
+
 .form-card{
 background:white;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
 margin-bottom:25px;
 }
@@ -93,6 +109,7 @@ align-items:center;
 padding:10px;
 border:1px solid #d1d5db;
 border-radius:6px;
+min-width:180px;
 }
 
 .form-row button{
@@ -102,9 +119,16 @@ color:white;
 border:none;
 border-radius:6px;
 cursor:pointer;
+font-weight:500;
 }
 
+.form-row button:hover{
+background:#1d4ed8;
+}
+
+
 /* VARIANTES */
+
 .variant-item{
 background:#f8fafc;
 padding:10px;
@@ -115,10 +139,12 @@ justify-content:space-between;
 align-items:center;
 }
 
+
 /* TABLE */
+
 .table-card{
 background:white;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
 overflow-x:auto;
 }
@@ -128,14 +154,88 @@ width:100%;
 border-collapse:collapse;
 }
 
-th,td{
-padding:12px;
-border-bottom:1px solid #e5e7eb;
+th{
+background:#f8fafc;
+font-weight:600;
 }
 
-img{
-width:60px;
+th,td{
+padding:14px;
+border-bottom:1px solid #e5e7eb;
+text-align:left;
+}
+
+td img{
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:8px;
+}
+
+.action-btn{
+padding:7px 10px;
+border:none;
 border-radius:6px;
+cursor:pointer;
+font-size:13px;
+margin-right:6px;
+}
+
+.edit-btn{
+background:#2563eb;
+color:white;
+}
+
+.delete-btn{
+background:#ef4444;
+color:white;
+}
+
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.sidebar{
+width:180px;
+padding:15px;
+}
+
+.content{
+padding:20px;
+}
+
+}
+
+@media(max-width:700px){
+
+body{
+display:block;
+}
+
+.sidebar{
+width:100%;
+height:auto;
+}
+
+.content{
+padding:15px;
+}
+
+.form-row{
+flex-direction:column;
+align-items:stretch;
+}
+
+.form-row input,
+.form-row button{
+width:100%;
+}
+
+.page-title{
+font-size:24px;
+}
+
 }
 
 </style>
@@ -144,67 +244,149 @@ border-radius:6px;
 
 <body>
 
+
+<!-- SIDEBAR -->
+
 <div class="sidebar">
 
-<div class="logo">Mercadia</div>
+<div class="logo">
+Mercadia
+</div>
 
 <div class="menu">
-<a href="dashboard.html">Dashboard</a>
-<a href="products.html">Productos</a>
+
+<a href="dashboard.html">
+Dashboard
+</a>
+
+<a href="products.html">
+Productos
+</a>
+
+<a href="orders.html">
+Pedidos
+</a>
+
+<a href="inventory.html">
+Inventario
+</a>
+
+<a href="customers.html">
+Clientes
+</a>
+
 </div>
 
-<button class="logout" onclick="logout()">Cerrar sesión</button>
+<button class="logout" onclick="logout()">
+Cerrar sesión
+</button>
 
 </div>
 
+
+<!-- CONTENT -->
 
 <div class="content">
 
-<h2>Gestión de productos</h2>
+<h2 class="page-title">
+Gestión de productos
+</h2>
+
+
+<!-- FORM -->
 
 <div class="form-card">
 
-<form id="product-form" onsubmit="event.preventDefault(); createProduct();">
+<form
+id="product-form"
+onsubmit="event.preventDefault(); createProduct();"
+>
 
 <div class="form-row">
 
-<input id="name" placeholder="Nombre producto" required>
+<input
+id="name"
+placeholder="Nombre producto"
+required
+>
 
-<input id="description" placeholder="Descripción">
+<input
+id="description"
+placeholder="Descripción"
+>
 
-<input id="price" type="number" placeholder="Precio" required>
+<input
+id="price"
+type="number"
+placeholder="Precio"
+required
+>
 
-<input type="file" id="image">
+<input
+type="file"
+id="image"
+>
 
-<input id="category" placeholder="Categoría">
+<input
+id="category"
+placeholder="Categoría"
+>
 
 <label>
-<input type="checkbox" id="featured"> Destacado
+<input
+type="checkbox"
+id="featured"
+>
+Destacado
 </label>
 
-<button id="save-btn" type="submit">Agregar</button>
+<button
+id="save-btn"
+type="submit"
+>
+Agregar
+</button>
 
 </div>
 
 </form>
 
+
 <!-- VARIANTES -->
 
-<div style="margin-top:20px;">
+<div style="margin-top:25px;">
 
-<h3>Variantes (1 imagen por color)</h3>
+<h3 style="margin-bottom:15px;">
+Variantes (1 imagen por color)
+</h3>
 
 <div class="form-row">
 
-<input id="variant-color" placeholder="Color (ej: rojo)">
+<input
+id="variant-color"
+placeholder="Color (ej: rojo)"
+>
 
-<input id="variant-size" placeholder="Tallas (ej: S,M,L)">
+<input
+id="variant-size"
+placeholder="Tallas (ej: S,M,L)"
+>
 
-<input id="variant-price" type="number" placeholder="Precio variante">
+<input
+id="variant-price"
+type="number"
+placeholder="Precio variante"
+>
 
-<input type="file" id="variant-image">
+<input
+type="file"
+id="variant-image"
+>
 
-<button type="button" onclick="addVariant()">
+<button
+type="button"
+onclick="addVariant()"
+>
 Agregar variante
 </button>
 
@@ -217,17 +399,34 @@ Agregar variante
 </div>
 
 
+<!-- TABLE -->
+
 <div class="table-card">
 
 <table>
 
 <thead>
+
 <tr>
-<th>Nombre</th>
-<th>Precio</th>
-<th>Imagen</th>
-<th>Acciones</th>
+
+<th>
+Nombre
+</th>
+
+<th>
+Precio
+</th>
+
+<th>
+Imagen
+</th>
+
+<th>
+Acciones
+</th>
+
 </tr>
+
 </thead>
 
 <tbody id="products-table"></tbody>
@@ -238,7 +437,9 @@ Agregar variante
 
 </div>
 
+
 <script src="js/auth.js"></script>
+
 <script type="module" src="js/products.js"></script>
 
 </body>
