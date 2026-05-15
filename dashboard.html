@@ -28,6 +28,7 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
+
 /* BOTON HAMBURGUESA */
 
 .menu-toggle{
@@ -44,6 +45,7 @@ font-size:20px;
 cursor:pointer;
 z-index:2000;
 }
+
 
 /* SIDEBAR */
 
@@ -71,6 +73,7 @@ color:#cbd5f5;
 text-decoration:none;
 border-radius:6px;
 margin-bottom:6px;
+transition:0.2s;
 }
 
 .menu a:hover{
@@ -88,6 +91,7 @@ border-radius:6px;
 cursor:pointer;
 }
 
+
 /* CONTENT */
 
 .content{
@@ -98,17 +102,37 @@ min-width:0;
 
 .header{
 font-size:24px;
-margin-bottom:20px;
+margin-bottom:25px;
+font-weight:600;
 }
 
-.card{
+
+/* KPI GRID */
+
+.stats-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+}
+
+.stat-card{
 background:white;
 padding:25px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 6px 20px rgba(0,0,0,0.08);
-max-width:500px;
-width:100%;
 }
+
+.stat-card h3{
+font-size:32px;
+margin-bottom:10px;
+color:#0f172a;
+}
+
+.stat-card p{
+color:#64748b;
+font-size:15px;
+}
+
 
 /* TABLET */
 
@@ -124,6 +148,7 @@ padding:20px;
 }
 
 }
+
 
 /* MOBILE */
 
@@ -176,11 +201,8 @@ padding:60px 20px 20px 20px;
 font-size:22px;
 }
 
-.card{
-padding:20px;
 }
 
-}
 
 /* CELULARES PEQUEÑOS */
 
@@ -190,8 +212,12 @@ padding:20px;
 font-size:20px;
 }
 
-.card{
+.stat-card{
 padding:18px;
+}
+
+.stat-card h3{
+font-size:26px;
 }
 
 }
@@ -202,7 +228,12 @@ padding:18px;
 
 <body>
 
-<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+<button class="menu-toggle" onclick="toggleMenu()">
+☰
+</button>
+
+
+<!-- SIDEBAR -->
 
 <div class="sidebar">
 
@@ -212,9 +243,25 @@ Mercadia
 
 <div class="menu">
 
-<a href="dashboard.html">Dashboard</a>
+<a href="dashboard.html">
+Dashboard
+</a>
 
-<a href="products.html">Productos</a>
+<a href="products.html">
+Productos
+</a>
+
+<a href="orders.html">
+Pedidos
+</a>
+
+<a href="inventory.html">
+Inventario
+</a>
+
+<a href="customers.html">
+Clientes
+</a>
 
 </div>
 
@@ -224,21 +271,75 @@ Cerrar sesión
 
 </div>
 
+
+<!-- CONTENT -->
+
 <div class="content">
 
 <div class="header">
 Panel de administración
 </div>
 
-<div class="card">
 
-Bienvenido al panel de Mercadia.
+<!-- KPI CARDS -->
 
-Desde aquí puedes administrar los productos de tu tienda.
+<div class="stats-grid">
+
+  <div class="stat-card">
+
+    <h3 id="total-orders">
+      0
+    </h3>
+
+    <p>
+      Pedidos pendientes
+    </p>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <h3 id="month-sales">
+      $0
+    </h3>
+
+    <p>
+      Ventas del mes
+    </p>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <h3 id="total-products">
+      0
+    </h3>
+
+    <p>
+      Productos
+    </p>
+
+  </div>
+
+
+  <div class="stat-card">
+
+    <h3 id="low-stock">
+      0
+    </h3>
+
+    <p>
+      Stock bajo
+    </p>
+
+  </div>
 
 </div>
 
 </div>
+
 
 <script src="js/auth.js"></script>
 
@@ -249,6 +350,7 @@ PROTEGER DASHBOARD
 ========================= */
 
 protect();
+
 
 /* =========================
 MENU HAMBURGUESA
@@ -264,7 +366,7 @@ sidebar.classList.toggle("open");
 
 </script>
 
-<script src="js/dashboard.js"></script>
+<script type="module" src="js/dashboard.js"></script>
 
 </body>
 </html>
