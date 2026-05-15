@@ -41,23 +41,63 @@ function addVariant(){
   const imageInput =
     document.getElementById("variant-image");
 
-  if(!color || !sizesInput || !price){
 
-    alert("Completa color, tallas y precio");
+  /* =========================
+  VALIDACIÓN ERP REAL
+  ========================= */
 
-    return;
+  if(!editingProduct){
+
+    if(!color || !sizesInput || !price){
+
+      alert("Completa color, tallas y precio");
+
+      return;
+
+    }
+
+    if(!imageInput.files[0]){
+
+      alert("Selecciona imagen para ese color");
+
+      return;
+
+    }
 
   }
 
-  if(!imageInput.files[0]){
 
-    alert("Selecciona imagen para ese color");
+  /* =========================
+  EDITAR INVENTARIO
+  ========================= */
 
-    return;
+  if(editingProduct){
+
+    if(!color && variants.length > 0){
+
+      variants[0].stock = stock;
+
+      variants[0].sku = sku;
+
+      variants[0].cost = cost;
+
+      renderVariants();
+
+      alert("Inventario actualizado");
+
+      return;
+
+    }
 
   }
 
-  const exists = variants.find(v => v.color === color);
+
+  /* =========================
+  VALIDAR DUPLICADOS
+  ========================= */
+
+  const exists =
+    variants.find(v => v.color === color);
 
   if(exists){
 
@@ -66,6 +106,11 @@ function addVariant(){
     return;
 
   }
+
+
+  /* =========================
+  CREAR NUEVA VARIANTE
+  ========================= */
 
   const sizes =
     sizesInput.split(",").map(s => s.trim());
@@ -84,7 +129,7 @@ function addVariant(){
 
     cost,
 
-    image: imageInput.files[0]
+    image: imageInput.files[0] || null
 
   });
 
@@ -204,10 +249,6 @@ async function loadProducts(){
 
       const featuredStar =
         p.featured ? "⭐" : "";
-
-      // =========================
-      // STOCK TOTAL
-      // =========================
 
       const totalStock =
         (p.variants || []).reduce(
