@@ -131,12 +131,13 @@ background:#1d4ed8;
 
 .variant-item{
 background:#f8fafc;
-padding:10px;
-border-radius:6px;
-margin-top:8px;
+padding:14px;
+border-radius:8px;
+margin-top:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+border:1px solid #e2e8f0;
 }
 
 
@@ -189,6 +190,16 @@ color:white;
 .delete-btn{
 background:#ef4444;
 color:white;
+}
+
+.stock-low{
+color:#dc2626;
+font-weight:bold;
+}
+
+.stock-ok{
+color:#16a34a;
+font-weight:bold;
 }
 
 
@@ -352,12 +363,12 @@ Agregar
 </form>
 
 
-<!-- VARIANTES -->
+<!-- VARIANTES ERP -->
 
 <div style="margin-top:25px;">
 
 <h3 style="margin-bottom:15px;">
-Variantes (1 imagen por color)
+Variantes ERP (1 imagen por color)
 </h3>
 
 <div class="form-row">
@@ -376,6 +387,23 @@ placeholder="Tallas (ej: S,M,L)"
 id="variant-price"
 type="number"
 placeholder="Precio variante"
+>
+
+<input
+id="variant-stock"
+type="number"
+placeholder="Stock inicial"
+>
+
+<input
+id="variant-sku"
+placeholder="SKU"
+>
+
+<input
+id="variant-cost"
+type="number"
+placeholder="Costo"
 >
 
 <input
@@ -418,7 +446,19 @@ Precio
 </th>
 
 <th>
+Stock
+</th>
+
+<th>
+Estado
+</th>
+
+<th>
 Imagen
+</th>
+
+<th>
+Destacado
 </th>
 
 <th>

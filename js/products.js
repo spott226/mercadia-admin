@@ -11,55 +11,111 @@ if (!token || !store_id) {
 
 let editingProduct = null;
 
+
 /* =========================
-VARIANTES
+VARIANTES ERP
 ========================= */
 
 let variants = [];
 
 function addVariant(){
 
-  const color = document.getElementById("variant-color").value;
-  const sizesInput = document.getElementById("variant-size").value;
-  const price = document.getElementById("variant-price").value;
-  const imageInput = document.getElementById("variant-image");
+  const color =
+    document.getElementById("variant-color").value;
+
+  const sizesInput =
+    document.getElementById("variant-size").value;
+
+  const price =
+    document.getElementById("variant-price").value;
+
+  const stock =
+    document.getElementById("variant-stock")?.value || 0;
+
+  const sku =
+    document.getElementById("variant-sku")?.value || "";
+
+  const cost =
+    document.getElementById("variant-cost")?.value || 0;
+
+  const imageInput =
+    document.getElementById("variant-image");
 
   if(!color || !sizesInput || !price){
+
     alert("Completa color, tallas y precio");
+
     return;
+
   }
 
   if(!imageInput.files[0]){
+
     alert("Selecciona imagen para ese color");
+
     return;
+
   }
 
   const exists = variants.find(v => v.color === color);
+
   if(exists){
+
     alert("Ese color ya fue agregado");
+
     return;
+
   }
 
-  const sizes = sizesInput.split(",").map(s => s.trim());
+  const sizes =
+    sizesInput.split(",").map(s => s.trim());
 
   variants.push({
+
     color,
+
     sizes,
+
     price,
+
+    stock,
+
+    sku,
+
+    cost,
+
     image: imageInput.files[0]
+
   });
 
   renderVariants();
 
-  document.getElementById("variant-color").value="";
-  document.getElementById("variant-size").value="";
-  document.getElementById("variant-price").value="";
-  imageInput.value="";
+  document.getElementById("variant-color").value = "";
+  document.getElementById("variant-size").value = "";
+  document.getElementById("variant-price").value = "";
+
+  if(document.getElementById("variant-stock")){
+    document.getElementById("variant-stock").value = "";
+  }
+
+  if(document.getElementById("variant-sku")){
+    document.getElementById("variant-sku").value = "";
+  }
+
+  if(document.getElementById("variant-cost")){
+    document.getElementById("variant-cost").value = "";
+  }
+
+  imageInput.value = "";
+
 }
+
 
 function renderVariants(){
 
-  const list = document.getElementById("variants-list");
+  const list =
+    document.getElementById("variants-list");
+
   if(!list) return;
 
   list.innerHTML = "";
@@ -67,10 +123,43 @@ function renderVariants(){
   variants.forEach((v,i)=>{
 
     list.innerHTML += `
-    <div style="margin-top:5px;">
-      ${v.color} / ${v.sizes.join(",")} / $${v.price}
-      📷
-      <button onclick="removeVariant(${i})">x</button>
+    <div class="variant-item">
+
+      <div>
+
+        <strong>${v.color}</strong>
+
+        <br>
+
+        Tallas:
+        ${v.sizes.join(", ")}
+
+        <br>
+
+        Precio:
+        $${v.price}
+
+        <br>
+
+        Stock:
+        ${v.stock}
+
+        <br>
+
+        SKU:
+        ${v.sku || "-"}
+
+        <br>
+
+        Costo:
+        $${v.cost || 0}
+
+      </div>
+
+      <button onclick="removeVariant(${i})">
+        Eliminar
+      </button>
+
     </div>
     `;
 
@@ -78,9 +167,13 @@ function renderVariants(){
 
 }
 
+
 function removeVariant(index){
+
   variants.splice(index,1);
+
   renderVariants();
+
 }
 
 window.addVariant = addVariant;
@@ -95,9 +188,12 @@ async function loadProducts(){
 
   try{
 
-    const data = await apiRequest(`/products/${store_id}`);
+    const data =
+      await apiRequest(`/products/${store_id}`);
 
-    const table = document.getElementById("products-table");
+    const table =
+      document.getElementById("products-table");
+
     table.innerHTML = "";
 
     data.forEach(p=>{
@@ -106,14 +202,39 @@ async function loadProducts(){
         ? `<img src="${p.image}" width="60">`
         : "";
 
-      const featuredStar = p.featured ? "⭐" : "";
+      const featuredStar =
+        p.featured ? "⭐" : "";
+
+      // =========================
+      // STOCK TOTAL
+      // =========================
+
+      const totalStock =
+        (p.variants || []).reduce(
+          (acc,v)=>acc + Number(v.stock || 0),
+          0
+        );
+
+      const stockStatus =
+        totalStock <= 5
+          ? `<span style="color:red;font-weight:bold;">Bajo</span>`
+          : `<span style="color:green;font-weight:bold;">OK</span>`;
 
       table.innerHTML += `
       <tr>
+
         <td>${p.name || ""}</td>
-        <td>${p.price || ""}</td>
+
+        <td>$${p.price || 0}</td>
+
+        <td>${totalStock}</td>
+
+        <td>${stockStatus}</td>
+
         <td>${imageHTML}</td>
+
         <td>${featuredStar}</td>
+
         <td>
 
         <button onclick='editProduct(
@@ -133,13 +254,16 @@ async function loadProducts(){
         </button>
 
         </td>
+
       </tr>
       `;
 
     });
 
   }catch(err){
+
     console.error("Error cargando productos",err);
+
   }
 
 }
@@ -151,91 +275,171 @@ CREAR / EDITAR PRODUCTO
 
 async function createProduct(){
 
-  const name = document.getElementById("name").value;
-  const description = document.getElementById("description").value;
-  const price = document.getElementById("price").value;
-  const category = document.getElementById("category").value;
-  const featured = document.getElementById("featured").checked;
+  const name =
+    document.getElementById("name").value;
+
+  const description =
+    document.getElementById("description").value;
+
+  const price =
+    document.getElementById("price").value;
+
+  const category =
+    document.getElementById("category").value;
+
+  const featured =
+    document.getElementById("featured").checked;
 
   if(!name || !price){
+
     alert("Nombre y precio son obligatorios");
+
     return;
+
   }
 
   const formData = new FormData();
 
   formData.append("name",name);
+
   formData.append("description",description);
+
   formData.append("price",price);
+
   formData.append("category",category);
+
   formData.append("featured",featured);
 
+
   /* =========================
-  VARIANTES
+  VARIANTES ERP
   ========================= */
 
   let finalVariants = [];
 
   variants.forEach(v=>{
+
     v.sizes.forEach(size=>{
+
       finalVariants.push({
+
         color: v.color,
+
         size: size,
-        price: v.price
+
+        price: v.price,
+
+        stock: v.stock,
+
+        sku: v.sku,
+
+        cost: v.cost
+
       });
+
     });
+
   });
 
-  // 🔥 SIEMPRE enviar (aunque esté vacío)
-  formData.append("variants",JSON.stringify(finalVariants));
+  formData.append(
+    "variants",
+    JSON.stringify(finalVariants)
+  );
 
-  // 🔥 SOLO enviar imágenes si existen
+
+  /* =========================
+  IMÁGENES COLOR
+  ========================= */
+
   variants.forEach(v=>{
+
     if(v.image){
-      formData.append("color_images", v.image);
+
+      formData.append(
+        "color_images",
+        v.image
+      );
+
     }
+
   });
 
   if(variants.some(v=>v.image)){
+
     formData.append(
       "image_colors",
-      JSON.stringify(variants.map(v => v.color))
+      JSON.stringify(
+        variants.map(v => v.color)
+      )
     );
+
   }
 
-  const image = document.getElementById("image").files[0];
+
+  /* =========================
+  IMAGEN PRINCIPAL
+  ========================= */
+
+  const image =
+    document.getElementById("image").files[0];
 
   if(image){
+
     formData.append("image",image);
+
   }
 
+
+  /* =========================
+  CREATE / UPDATE
+  ========================= */
+
   let url = `/products`;
+
   let method = "POST";
 
   if(editingProduct){
+
     url = `/products/${editingProduct}`;
+
     method = "PUT";
+
   }
 
-  const res = await fetch(`${API_URL}/api${url}`,{
-    method:method,
-    headers:{
-      Authorization:`Bearer ${token}`
-    },
-    body:formData
-  });
+  const res = await fetch(
+    `${API_URL}/api${url}`,
+    {
+      method:method,
+
+      headers:{
+        Authorization:`Bearer ${token}`
+      },
+
+      body:formData
+    }
+  );
 
   if(!res.ok){
+
     alert("Error al guardar producto");
+
     return;
+
   }
 
   editingProduct = null;
+
   variants = [];
+
   renderVariants();
 
-  document.getElementById("product-form").reset();
-  document.getElementById("save-btn").innerText="Agregar";
+  document
+    .getElementById("product-form")
+    .reset();
+
+  document
+    .getElementById("save-btn")
+    .innerText = "Agregar";
 
   loadProducts();
 
@@ -246,35 +450,65 @@ async function createProduct(){
 EDITAR PRODUCTO
 ========================= */
 
-function editProduct(id,name,description,price,category,featured,productVariants){
+function editProduct(
+  id,
+  name,
+  description,
+  price,
+  category,
+  featured,
+  productVariants
+){
 
   editingProduct = id;
 
   document.getElementById("name").value=name;
+
   document.getElementById("description").value=description;
+
   document.getElementById("price").value=price;
+
   document.getElementById("category").value=category;
+
   document.getElementById("featured").checked=featured;
 
   const grouped = {};
 
   productVariants.forEach(v=>{
+
     if(!grouped[v.color]){
+
       grouped[v.color] = {
+
         color: v.color,
+
         sizes: [],
+
         price: v.price,
+
+        stock: v.stock || 0,
+
+        sku: v.sku || "",
+
+        cost: v.cost || 0,
+
         image: null
+
       };
+
     }
+
     grouped[v.color].sizes.push(v.size);
+
   });
 
   variants = Object.values(grouped);
 
   renderVariants();
 
-  document.getElementById("save-btn").innerText="Guardar cambios";
+  document
+    .getElementById("save-btn")
+    .innerText = "Guardar cambios";
 
 }
 
@@ -285,7 +519,9 @@ ELIMINAR PRODUCTO
 
 async function deleteProduct(id){
 
-  const ok = confirm("¿Eliminar producto?");
+  const ok =
+    confirm("¿Eliminar producto?");
+
   if(!ok) return;
 
   await apiRequest(`/products/${id}`,"DELETE");
