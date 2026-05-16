@@ -21,6 +21,15 @@ let movementsData = [];
 
 
 /* =========================
+PAGINATION INVENTORY
+========================= */
+
+let inventoryPage = 1;
+
+let inventoryLimit = 10;
+
+
+/* =========================
 INIT
 ========================= */
 
@@ -133,7 +142,7 @@ function renderInventoryKPIs(kpis){
   ).innerText =
     `$${Number(
       kpis.totalInventoryValue || 0
-    ).toFixed(2)}`;
+    ).toLocaleString()}`;
 
   document.getElementById(
     "total-variants"
@@ -180,7 +189,27 @@ function renderInventoryTable(data){
 
   }
 
-  data.forEach(item=>{
+
+  /* =========================
+  PAGINATION
+  ========================= */
+
+  const start =
+    (inventoryPage - 1)
+    * inventoryLimit;
+
+  const end =
+    start + inventoryLimit;
+
+  const paginatedData =
+    data.slice(start,end);
+
+
+  /* =========================
+  TABLE DATA
+  ========================= */
+
+  paginatedData.forEach(item=>{
 
     const stockClass =
       Number(item.stock) <= 5
@@ -204,7 +233,15 @@ function renderInventoryTable(data){
         ${
           item.image
           ? `
-            <img src="${item.image}">
+            <img
+              src="${item.image}"
+              style="
+                width:60px;
+                height:60px;
+                object-fit:cover;
+                border-radius:10px;
+              "
+            >
           `
           : "-"
         }
@@ -229,16 +266,27 @@ function renderInventoryTable(data){
         ${item.stock || 0}
       </td>
 
-      <td>
+      <td
+        style="
+          min-width:120px;
+          white-space:nowrap;
+        "
+      >
         $${Number(
           item.cost || 0
         ).toFixed(2)}
       </td>
 
-      <td>
+      <td
+        style="
+          min-width:160px;
+          font-weight:600;
+          white-space:nowrap;
+        "
+      >
         $${Number(
           item.inventory_value || 0
-        ).toFixed(2)}
+        ).toLocaleString()}
       </td>
 
       <td>
@@ -256,7 +304,139 @@ function renderInventoryTable(data){
 
   });
 
+  renderInventoryPagination(
+    data.length
+  );
+
 }
+
+
+/* =========================
+PAGINATION UI
+========================= */
+
+function renderInventoryPagination(totalItems){
+
+  const totalPages =
+    Math.ceil(
+      totalItems / inventoryLimit
+    );
+
+  let pagination =
+    document.getElementById(
+      "inventory-pagination"
+    );
+
+  if(!pagination){
+
+    pagination =
+      document.createElement("div");
+
+    pagination.id =
+      "inventory-pagination";
+
+    pagination.className =
+      "pagination";
+
+    pagination.style.marginTop =
+      "20px";
+
+    pagination.style.display =
+      "flex";
+
+    pagination.style.justifyContent =
+      "center";
+
+    pagination.style.alignItems =
+      "center";
+
+    pagination.style.gap =
+      "10px";
+
+    document
+      .querySelector(".table-card")
+      .appendChild(pagination);
+
+  }
+
+  pagination.innerHTML = `
+
+    <button
+      ${
+        inventoryPage <= 1
+        ? "disabled"
+        : ""
+      }
+      onclick="prevInventoryPage()"
+    >
+      Anterior
+    </button>
+
+    <span
+      style="
+        font-weight:600;
+      "
+    >
+      Página ${inventoryPage}
+      de ${totalPages}
+    </span>
+
+    <button
+      ${
+        inventoryPage >= totalPages
+        ? "disabled"
+        : ""
+      }
+      onclick="nextInventoryPage()"
+    >
+      Siguiente
+    </button>
+
+  `;
+
+}
+
+
+/* =========================
+NEXT PAGE
+========================= */
+
+window.nextInventoryPage = () => {
+
+  const totalPages =
+    Math.ceil(
+      inventoryData.length
+      / inventoryLimit
+    );
+
+  if(
+    inventoryPage < totalPages
+  ){
+
+    inventoryPage++;
+
+    applyFilters();
+
+  }
+
+};
+
+
+/* =========================
+PREV PAGE
+========================= */
+
+window.prevInventoryPage = () => {
+
+  if(inventoryPage > 1){
+
+    inventoryPage--;
+
+    applyFilters();
+
+  }
+
+};
 
 
 /* =========================
