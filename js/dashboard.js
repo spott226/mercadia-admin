@@ -1,31 +1,102 @@
 import { getProducts } from "./api.js";
 
-document.addEventListener("DOMContentLoaded", async () => {
+const API_URL =
+  "https://mercadia-back-production.up.railway.app/api";
 
-  const store = localStorage.getItem("store_id");
+const token =
+  localStorage.getItem("token");
 
-  if (!store) {
+const store =
+  localStorage.getItem("store_id");
 
-    window.location = "login.html";
+if (!store || !token) {
 
-    return;
+  window.location = "login.html";
+
+}
+
+
+/* =========================
+GLOBAL STATS
+========================= */
+
+let orders = [];
+
+let monthlySales = 0;
+
+let totalRevenue = 0;
+
+let totalOrders = 0;
+
+let averageTicket = 0;
+
+
+/* =========================
+INIT
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    await loadDashboardStats();
 
   }
+);
+
+
+/* =========================
+LOAD DASHBOARD STATS
+========================= */
+
+async function loadDashboardStats(){
 
   try {
 
     // =========================
-    // TOTAL PRODUCTOS
+    // PRODUCTS
     // =========================
 
-    const products =
+    const response =
       await getProducts(store);
 
+    const products =
+      response.products || [];
+
+
+    // =========================
+    // ORDERS
+    // =========================
+
+    const ordersRes =
+      await fetch(
+        `${API_URL}/orders`,
+        {
+          headers:{
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+    const ordersData =
+      await ordersRes.json();
+
+    orders =
+      ordersData.orders || [];
+
+
+    // =========================
+    // TOTAL PRODUCTS
+    // =========================
+
     const totalProducts =
-      products?.length || 0;
+      products.length || 0;
 
     const totalProductsElement =
-      document.getElementById("total-products");
+      document.getElementById(
+        "total-products"
+      );
 
     if(totalProductsElement){
 
@@ -36,7 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // =========================
-    // STOCK BAJO
+    // LOW STOCK
     // =========================
 
     let lowStock = 0;
@@ -59,7 +130,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     const lowStockElement =
-      document.getElementById("low-stock");
+      document.getElementById(
+        "low-stock"
+      );
 
     if(lowStockElement){
 
@@ -70,33 +143,406 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     // =========================
-    // PLACEHOLDERS ERP
+    // TOTAL ORDERS
     // =========================
 
-    // pedidos pendientes
+    totalOrders =
+      orders.length;
+
     const ordersElement =
-      document.getElementById("total-orders");
+      document.getElementById(
+        "total-orders"
+      );
 
     if(ordersElement){
 
-      ordersElement.innerText = "0";
+      ordersElement.innerText =
+        totalOrders;
 
     }
 
-    // ventas del mes
+
+    // =========================
+    // MONTH SALES
+    // =========================
+
+    const now =
+      new Date();
+
+    const currentMonth =
+      now.getMonth();
+
+    const currentYear =
+      now.getFullYear();
+
+    let monthTotal = 0;
+
+    orders.forEach(order => {
+
+      const orderDate =
+        new Date(order.created_at);
+
+      if(
+
+        orderDate.getMonth()
+        === currentMonth
+
+        &&
+
+        orderDate.getFullYear()
+        === currentYear
+
+      ){
+
+        monthTotal +=
+          Number(order.total || 0);
+
+      }
+
+    });
+
+    monthlySales =
+      monthTotal;
+
     const salesElement =
-      document.getElementById("month-sales");
+      document.getElementById(
+        "month-sales"
+      );
 
     if(salesElement){
 
-      salesElement.innerText = "$0";
+      salesElement.innerText =
+        `$${monthTotal.toLocaleString()}`;
 
     }
 
+
+    // =========================
+    // TOTAL REVENUE
+    // =========================
+
+    totalRevenue =
+      orders.reduce(
+
+        (acc,order)=>
+
+          acc +
+          Number(order.total || 0),
+
+        0
+
+      );
+
+    const revenueElement =
+      document.getElementById(
+        "total-revenue"
+      );
+
+    if(revenueElement){
+
+      revenueElement.innerText =
+        `$${totalRevenue.toLocaleString()}`;
+
+    }
+
+
+    // =========================
+    // AVG TICKET
+    // =========================
+
+    averageTicket =
+
+      totalOrders > 0
+
+      ?
+
+      totalRevenue / totalOrders
+
+      :
+
+      0;
+
+    const avgElement =
+      document.getElementById(
+        "average-ticket"
+      );
+
+    if(avgElement){
+
+      avgElement.innerText =
+        `$${averageTicket.toFixed(2)}`;
+
+    }
+
+
+    // =========================
+    // RECENT ORDERS
+    // =========================
+
+    renderRecentOrders(
+
+      orders.slice(0,5)
+
+    );
+
+
+    // =========================
+    // BEST SELLERS
+    // =========================
+
+    renderBestSellers(
+      products
+    );
+
   } catch(err){
 
-    console.error("Dashboard error:", err);
+    console.error(
+      "Dashboard error:",
+      err
+    );
 
   }
 
-});
+}
+
+
+/* =========================
+RECENT ORDERS
+========================= */
+
+function renderRecentOrders(orders){
+
+  const table =
+    document.getElementById(
+      "recent-orders"
+    );
+
+  if(!table) return;
+
+  table.innerHTML = "";
+
+  if(orders.length === 0){
+
+    table.innerHTML = `
+    
+      <tr>
+
+        <td colspan="5">
+
+          No hay pedidos
+
+        </td>
+
+      </tr>
+
+    `;
+
+    return;
+
+  }
+
+  orders.forEach(order=>{
+
+    table.innerHTML += `
+    
+      <tr>
+
+        <td>
+
+          #${order.id}
+
+        </td>
+
+        <td>
+
+          ${order.customer_name || "-"}
+
+        </td>
+
+        <td>
+
+          $${Number(
+            order.total || 0
+          ).toLocaleString()}
+
+        </td>
+
+        <td>
+
+          ${order.status || "-"}
+
+        </td>
+
+        <td>
+
+          ${
+            order.created_at
+
+            ?
+
+            new Date(
+              order.created_at
+            ).toLocaleDateString()
+
+            :
+
+            "-"
+
+          }
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+}
+
+
+/* =========================
+BEST SELLERS
+========================= */
+
+function renderBestSellers(products){
+
+  const container =
+    document.getElementById(
+      "best-sellers"
+    );
+
+  if(!container) return;
+
+  container.innerHTML = "";
+
+  const sorted =
+    [...products]
+
+    .sort((a,b)=>{
+
+      const stockA =
+        (a.variants || [])
+        .reduce(
+          (acc,v)=>
+            acc + Number(v.stock || 0),
+          0
+        );
+
+      const stockB =
+        (b.variants || [])
+        .reduce(
+          (acc,v)=>
+            acc + Number(v.stock || 0),
+          0
+        );
+
+      return stockA - stockB;
+
+    })
+
+    .slice(0,5);
+
+  sorted.forEach(product=>{
+
+    const totalStock =
+      (product.variants || [])
+      .reduce(
+        (acc,v)=>
+          acc + Number(v.stock || 0),
+        0
+      );
+
+    container.innerHTML += `
+
+      <div class="best-product">
+
+        <div>
+
+          <strong>
+
+            ${product.name || "-"}
+
+          </strong>
+
+          <br>
+
+          Stock:
+          ${totalStock}
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+/* =========================
+EXPORT MONTH REPORT
+========================= */
+
+window.exportMonthReport = () => {
+
+  const now =
+    new Date();
+
+  const report = {
+
+    month:
+      now.toLocaleString(
+        "es-MX",
+        {
+          month:"long"
+        }
+      ),
+
+    totalOrders,
+
+    monthlySales,
+
+    totalRevenue,
+
+    averageTicket,
+
+    generatedAt:
+      now.toLocaleString()
+
+  };
+
+  const blob =
+    new Blob(
+
+      [
+        JSON.stringify(
+          report,
+          null,
+          2
+        )
+      ],
+
+      {
+        type:"application/json"
+      }
+
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href = url;
+
+  a.download =
+    `reporte-${Date.now()}.json`;
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+};
