@@ -28,48 +28,112 @@ overflow-x:hidden;
 }
 
 
+/* BOTON HAMBURGUESA */
+
+.menu-toggle{
+display:none;
+position:fixed;
+top:15px;
+left:15px;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+border:none;
+width:48px;
+height:48px;
+border-radius:14px;
+font-size:22px;
+cursor:pointer;
+z-index:2000;
+box-shadow:0 8px 25px rgba(15,23,42,.25);
+backdrop-filter:blur(10px);
+transition:.25s ease;
+}
+
+.menu-toggle:hover{
+transform:scale(1.05);
+background:linear-gradient(135deg,#1e293b,#334155);
+}
+
+.menu-toggle:active{
+transform:scale(.96);
+}
+
+
+/* OVERLAY */
+
+.sidebar-overlay{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.45);
+backdrop-filter:blur(3px);
+opacity:0;
+pointer-events:none;
+transition:.3s;
+z-index:1400;
+}
+
+.sidebar-overlay.active{
+opacity:1;
+pointer-events:auto;
+}
+
+
 /* SIDEBAR */
 
 .sidebar{
 width:230px;
-background:#0f172a;
+background:linear-gradient(180deg,#0f172a 0%,#111827 100%);
 color:white;
 display:flex;
 flex-direction:column;
 padding:20px;
 flex-shrink:0;
+transition:.3s ease;
+box-shadow:8px 0 30px rgba(0,0,0,.08);
 }
 
 .logo{
 font-size:22px;
 font-weight:700;
-margin-bottom:30px;
+margin-bottom:35px;
+letter-spacing:.5px;
 }
 
 .menu a{
-display:block;
-padding:12px;
+display:flex;
+align-items:center;
+gap:10px;
+padding:13px 14px;
 color:#cbd5e1;
 text-decoration:none;
-border-radius:8px;
+border-radius:12px;
 margin-bottom:8px;
-transition:.2s;
+transition:.25s ease;
+font-size:15px;
+font-weight:500;
 }
 
 .menu a:hover{
-background:#1e293b;
+background:rgba(255,255,255,.08);
 color:white;
+transform:translateX(3px);
 }
 
 .logout{
 margin-top:auto;
-background:#ef4444;
+background:linear-gradient(135deg,#ef4444,#dc2626);
 border:none;
 padding:12px;
-border-radius:8px;
+border-radius:12px;
 color:white;
 cursor:pointer;
 font-weight:600;
+transition:.25s ease;
+}
+
+.logout:hover{
+transform:translateY(-1px);
+box-shadow:0 10px 20px rgba(239,68,68,.25);
 }
 
 
@@ -100,9 +164,16 @@ margin-bottom:25px;
 
 .kpi-card{
 background:white;
-padding:20px;
-border-radius:14px;
-box-shadow:0 6px 20px rgba(0,0,0,.06);
+padding:22px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.06);
+border:1px solid rgba(226,232,240,.7);
+transition:.25s ease;
+}
+
+.kpi-card:hover{
+transform:translateY(-3px);
+box-shadow:0 14px 35px rgba(0,0,0,.08);
 }
 
 .kpi-title{
@@ -123,21 +194,30 @@ color:#0f172a;
 .filters{
 background:white;
 padding:20px;
-border-radius:14px;
-box-shadow:0 6px 20px rgba(0,0,0,.06);
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.06);
 margin-bottom:20px;
 display:flex;
 gap:10px;
 flex-wrap:wrap;
+border:1px solid rgba(226,232,240,.7);
 }
 
 .filters input,
 .filters select{
 padding:12px;
 border:1px solid #cbd5e1;
-border-radius:8px;
+border-radius:12px;
 min-width:200px;
 background:white;
+outline:none;
+transition:.2s;
+}
+
+.filters input:focus,
+.filters select:focus{
+border-color:#0f172a;
+box-shadow:0 0 0 4px rgba(15,23,42,.08);
 }
 
 
@@ -145,9 +225,10 @@ background:white;
 
 .table-card{
 background:white;
-border-radius:14px;
-box-shadow:0 6px 20px rgba(0,0,0,.06);
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.06);
 overflow-x:auto;
+border:1px solid rgba(226,232,240,.7);
 }
 
 table{
@@ -169,6 +250,14 @@ text-align:left;
 vertical-align:top;
 }
 
+tbody tr{
+transition:.2s;
+}
+
+tbody tr:hover{
+background:#f8fafc;
+}
+
 .order-products{
 display:flex;
 flex-direction:column;
@@ -177,9 +266,10 @@ gap:6px;
 
 .product-item{
 background:#f8fafc;
-padding:8px;
-border-radius:6px;
+padding:10px;
+border-radius:10px;
 font-size:13px;
+border:1px solid #e2e8f0;
 }
 
 
@@ -219,22 +309,25 @@ gap:8px;
 
 .actions select{
 padding:10px;
-border-radius:8px;
+border-radius:10px;
 border:1px solid #cbd5e1;
+outline:none;
 }
 
 .actions button{
 padding:10px;
 border:none;
-border-radius:8px;
-background:#2563eb;
+border-radius:10px;
+background:linear-gradient(135deg,#2563eb,#1d4ed8);
 color:white;
 cursor:pointer;
 font-weight:600;
+transition:.2s;
 }
 
 .actions button:hover{
-background:#1d4ed8;
+transform:translateY(-1px);
+box-shadow:0 10px 20px rgba(37,99,235,.25);
 }
 
 
@@ -252,8 +345,8 @@ color:#64748b;
 @media(max-width:900px){
 
 .sidebar{
-width:180px;
-padding:15px;
+width:190px;
+padding:16px;
 }
 
 .content{
@@ -268,13 +361,30 @@ body{
 display:block;
 }
 
+.menu-toggle{
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
 .sidebar{
-width:100%;
-height:auto;
+position:fixed;
+left:-260px;
+top:0;
+width:240px;
+height:100vh;
+z-index:1500;
+padding-top:70px;
+border-top-right-radius:24px;
+border-bottom-right-radius:24px;
+}
+
+.sidebar.open{
+left:0;
 }
 
 .content{
-padding:15px;
+padding:75px 15px 15px 15px;
 }
 
 .filters{
@@ -297,6 +407,12 @@ font-size:24px;
 </head>
 
 <body>
+
+<button class="menu-toggle" onclick="toggleMenu()">
+☰
+</button>
+
+<div class="sidebar-overlay" onclick="toggleMenu()"></div>
 
 
 <!-- SIDEBAR -->
@@ -518,6 +634,20 @@ Cargando pedidos...
 
 </div>
 
+
+<script>
+
+function toggleMenu(){
+
+const sidebar = document.querySelector(".sidebar");
+const overlay = document.querySelector(".sidebar-overlay");
+
+sidebar.classList.toggle("open");
+overlay.classList.toggle("active");
+
+}
+
+</script>
 
 <script src="js/auth.js"></script>
 
