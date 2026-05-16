@@ -53,9 +53,10 @@ async function loadOrders(){
     );
 
     const data =
-      await res.json();
+  await res.json();
 
-    allOrders = data || [];
+allOrders =
+  data.orders || [];
 
     renderKPIs(allOrders);
 
