@@ -508,9 +508,9 @@ async function loadProducts(){
     ========================= */
 
     const pageInfo =
-      document.getElementById(
-        "page-info"
-      );
+  document.getElementById(
+    "page-info"
+  );
 
     if(pageInfo){
 
