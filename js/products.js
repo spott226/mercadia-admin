@@ -1,15 +1,36 @@
 import { apiRequest } from "./api.js";
 
-const API_URL = "https://mercadia-back-production.up.railway.app";
+const API_URL =
+  "https://mercadia-back-production.up.railway.app";
 
-const token = localStorage.getItem("token");
-const store_id = localStorage.getItem("store_id");
+const token =
+  localStorage.getItem("token");
+
+const store_id =
+  localStorage.getItem("store_id");
 
 if (!token || !store_id) {
+
   window.location = "login.html";
+
 }
 
 let editingProduct = null;
+
+
+/* =========================
+ERP PAGINATION
+========================= */
+
+let currentPage = 1;
+
+let currentLimit = 10;
+
+let currentSearch = "";
+
+let currentCategory = "";
+
+let totalPages = 1;
 
 
 /* =========================
@@ -21,36 +42,56 @@ let variants = [];
 function addVariant(){
 
   const color =
-    document.getElementById("variant-color").value;
+    document.getElementById(
+      "variant-color"
+    ).value;
 
   const sizesInput =
-    document.getElementById("variant-size").value;
+    document.getElementById(
+      "variant-size"
+    ).value;
 
   const price =
-    document.getElementById("variant-price").value;
+    document.getElementById(
+      "variant-price"
+    ).value;
 
   const stock =
-    document.getElementById("variant-stock")?.value || 0;
+    document.getElementById(
+      "variant-stock"
+    )?.value || 0;
 
   const sku =
-    document.getElementById("variant-sku")?.value || "";
+    document.getElementById(
+      "variant-sku"
+    )?.value || "";
 
   const cost =
-    document.getElementById("variant-cost")?.value || 0;
+    document.getElementById(
+      "variant-cost"
+    )?.value || 0;
 
   const imageInput =
-    document.getElementById("variant-image");
+    document.getElementById(
+      "variant-image"
+    );
 
 
   /* =========================
-  VALIDACIÓN ERP REAL
+  VALIDACIÓN ERP
   ========================= */
 
   if(!editingProduct){
 
-    if(!color || !sizesInput || !price){
+    if(
+      !color ||
+      !sizesInput ||
+      !price
+    ){
 
-      alert("Completa color, tallas y precio");
+      alert(
+        "Completa color, tallas y precio"
+      );
 
       return;
 
@@ -58,7 +99,9 @@ function addVariant(){
 
     if(!imageInput.files[0]){
 
-      alert("Selecciona imagen para ese color");
+      alert(
+        "Selecciona imagen para ese color"
+      );
 
       return;
 
@@ -68,12 +111,15 @@ function addVariant(){
 
 
   /* =========================
-  EDITAR INVENTARIO
+  INVENTARIO
   ========================= */
 
   if(editingProduct){
 
-    if(!color && variants.length > 0){
+    if(
+      !color &&
+      variants.length > 0
+    ){
 
       variants[0].stock = stock;
 
@@ -83,7 +129,9 @@ function addVariant(){
 
       renderVariants();
 
-      alert("Inventario actualizado");
+      alert(
+        "Inventario actualizado"
+      );
 
       return;
 
@@ -97,11 +145,15 @@ function addVariant(){
   ========================= */
 
   const exists =
-    variants.find(v => v.color === color);
+    variants.find(
+      v => v.color === color
+    );
 
   if(exists){
 
-    alert("Ese color ya fue agregado");
+    alert(
+      "Ese color ya fue agregado"
+    );
 
     return;
 
@@ -109,11 +161,13 @@ function addVariant(){
 
 
   /* =========================
-  CREAR NUEVA VARIANTE
+  CREAR VARIANTE
   ========================= */
 
   const sizes =
-    sizesInput.split(",").map(s => s.trim());
+    sizesInput
+      .split(",")
+      .map(s => s.trim());
 
   variants.push({
 
@@ -129,26 +183,59 @@ function addVariant(){
 
     cost,
 
-    image: imageInput.files[0] || null
+    image:
+      imageInput.files[0] || null
 
   });
 
   renderVariants();
 
-  document.getElementById("variant-color").value = "";
-  document.getElementById("variant-size").value = "";
-  document.getElementById("variant-price").value = "";
+  document.getElementById(
+    "variant-color"
+  ).value = "";
 
-  if(document.getElementById("variant-stock")){
-    document.getElementById("variant-stock").value = "";
+  document.getElementById(
+    "variant-size"
+  ).value = "";
+
+  document.getElementById(
+    "variant-price"
+  ).value = "";
+
+  if(
+    document.getElementById(
+      "variant-stock"
+    )
+  ){
+
+    document.getElementById(
+      "variant-stock"
+    ).value = "";
+
   }
 
-  if(document.getElementById("variant-sku")){
-    document.getElementById("variant-sku").value = "";
+  if(
+    document.getElementById(
+      "variant-sku"
+    )
+  ){
+
+    document.getElementById(
+      "variant-sku"
+    ).value = "";
+
   }
 
-  if(document.getElementById("variant-cost")){
-    document.getElementById("variant-cost").value = "";
+  if(
+    document.getElementById(
+      "variant-cost"
+    )
+  ){
+
+    document.getElementById(
+      "variant-cost"
+    ).value = "";
+
   }
 
   imageInput.value = "";
@@ -159,7 +246,9 @@ function addVariant(){
 function renderVariants(){
 
   const list =
-    document.getElementById("variants-list");
+    document.getElementById(
+      "variants-list"
+    );
 
   if(!list) return;
 
@@ -226,7 +315,7 @@ window.removeVariant = removeVariant;
 
 
 /* =========================
-CARGAR PRODUCTOS
+LOAD PRODUCTS ERP
 ========================= */
 
 async function loadProducts(){
@@ -234,16 +323,43 @@ async function loadProducts(){
   try{
 
     const data =
-      await apiRequest(`/products/${store_id}`);
+      await apiRequest(
+        `/products/${store_id}?page=${currentPage}&limit=${currentLimit}&search=${encodeURIComponent(currentSearch)}&category=${encodeURIComponent(currentCategory)}`
+      );
+
+    const products =
+      data.products || [];
+
+    const pagination =
+      data.pagination || {};
+
+    const categories =
+      data.categories || [];
+
+    totalPages =
+      pagination.totalPages || 1;
+
+
+    /* =========================
+    TABLE
+    ========================= */
 
     const table =
-      document.getElementById("products-table");
+      document.getElementById(
+        "products-table"
+      );
 
     table.innerHTML = "";
 
-    data.forEach(p=>{
 
-      const imageHTML = p.image
+    /* =========================
+    PRODUCTS
+    ========================= */
+
+    products.forEach(p=>{
+
+      const imageHTML =
+        p.image
         ? `<img src="${p.image}" width="60">`
         : "";
 
@@ -252,14 +368,15 @@ async function loadProducts(){
 
       const totalStock =
         (p.variants || []).reduce(
-          (acc,v)=>acc + Number(v.stock || 0),
+          (acc,v)=>
+            acc + Number(v.stock || 0),
           0
         );
 
       const stockStatus =
         totalStock <= 5
-          ? `<span style="color:red;font-weight:bold;">Bajo</span>`
-          : `<span style="color:green;font-weight:bold;">OK</span>`;
+        ? `<span class="stock-low">Bajo</span>`
+        : `<span class="stock-ok">OK</span>`;
 
       table.innerHTML += `
       <tr>
@@ -278,19 +395,33 @@ async function loadProducts(){
 
         <td>
 
-        <button onclick='editProduct(
-          ${p.id},
-          ${JSON.stringify(p.name || "")},
-          ${JSON.stringify(p.description || "")},
-          ${p.price || 0},
-          ${JSON.stringify(p.category || "")},
-          ${p.featured},
-          ${JSON.stringify(p.variants || [])}
-        )'>
+        <button
+          class="action-btn edit-btn"
+          onclick='editProduct(
+            ${p.id},
+            ${JSON.stringify(
+              p.name || ""
+            )},
+            ${JSON.stringify(
+              p.description || ""
+            )},
+            ${p.price || 0},
+            ${JSON.stringify(
+              p.category || ""
+            )},
+            ${p.featured},
+            ${JSON.stringify(
+              p.variants || []
+            )}
+          )'
+        >
         Editar
         </button>
 
-        <button onclick="deleteProduct(${p.id})">
+        <button
+          class="action-btn delete-btn"
+          onclick="deleteProduct(${p.id})"
+        >
         Eliminar
         </button>
 
@@ -301,13 +432,217 @@ async function loadProducts(){
 
     });
 
+
+    /* =========================
+    PAGINATION INFO
+    ========================= */
+
+    const info =
+      document.getElementById(
+        "pagination-info"
+      );
+
+    if(info){
+
+      const total =
+        pagination.total || 0;
+
+      const start =
+        total === 0
+        ? 0
+        : (
+            (currentPage - 1)
+            * currentLimit
+          ) + 1;
+
+      const end =
+        Math.min(
+          currentPage * currentLimit,
+          total
+        );
+
+      info.innerText =
+        `Mostrando ${start}-${end} de ${total} productos`;
+
+    }
+
+
+    /* =========================
+    CATEGORY FILTER
+    ========================= */
+
+    const categorySelect =
+      document.getElementById(
+        "filter-category"
+      );
+
+    if(
+      categorySelect &&
+      !categorySelect.dataset.loaded
+    ){
+
+      categorySelect.innerHTML = `
+      <option value="">
+        Todas las categorías
+      </option>
+      `;
+
+      categories.forEach(c=>{
+
+        categorySelect.innerHTML += `
+        <option value="${c.category}">
+          ${c.category}
+        </option>
+        `;
+
+      });
+
+      categorySelect.dataset.loaded =
+        "true";
+
+    }
+
+
+    /* =========================
+    PAGE INFO
+    ========================= */
+
+    const pageInfo =
+      document.getElementById(
+        "page-info"
+      );
+
+    if(pageInfo){
+
+      pageInfo.innerText =
+        `Página ${currentPage} de ${totalPages}`;
+
+    }
+
+
+    /* =========================
+    BUTTONS
+    ========================= */
+
+    const prevBtn =
+      document.getElementById(
+        "prev-page"
+      );
+
+    const nextBtn =
+      document.getElementById(
+        "next-page"
+      );
+
+    if(prevBtn){
+
+      prevBtn.disabled =
+        currentPage <= 1;
+
+    }
+
+    if(nextBtn){
+
+      nextBtn.disabled =
+        currentPage >= totalPages;
+
+    }
+
   }catch(err){
 
-    console.error("Error cargando productos",err);
+    console.error(
+      "Error cargando productos",
+      err
+    );
 
   }
 
 }
+
+
+/* =========================
+SEARCH
+========================= */
+
+window.searchProducts = () => {
+
+  currentSearch =
+    document.getElementById(
+      "search-product"
+    ).value;
+
+  currentPage = 1;
+
+  loadProducts();
+
+};
+
+
+/* =========================
+FILTER CATEGORY
+========================= */
+
+window.filterByCategory = () => {
+
+  currentCategory =
+    document.getElementById(
+      "filter-category"
+    ).value;
+
+  currentPage = 1;
+
+  loadProducts();
+
+};
+
+
+/* =========================
+CHANGE LIMIT
+========================= */
+
+window.changeLimit = () => {
+
+  currentLimit =
+    parseInt(
+      document.getElementById(
+        "limit-products"
+      ).value
+    );
+
+  currentPage = 1;
+
+  loadProducts();
+
+};
+
+
+/* =========================
+PAGINATION
+========================= */
+
+window.nextPage = () => {
+
+  if(currentPage < totalPages){
+
+    currentPage++;
+
+    loadProducts();
+
+  }
+
+};
+
+window.prevPage = () => {
+
+  if(currentPage > 1){
+
+    currentPage--;
+
+    loadProducts();
+
+  }
+
+};
 
 
 /* =========================
@@ -317,43 +652,65 @@ CREAR / EDITAR PRODUCTO
 async function createProduct(){
 
   const name =
-    document.getElementById("name").value;
+    document.getElementById(
+      "name"
+    ).value;
 
   const description =
-    document.getElementById("description").value;
+    document.getElementById(
+      "description"
+    ).value;
 
   const price =
-    document.getElementById("price").value;
+    document.getElementById(
+      "price"
+    ).value;
 
   const category =
-    document.getElementById("category").value;
+    document.getElementById(
+      "category"
+    ).value;
 
   const featured =
-    document.getElementById("featured").checked;
+    document.getElementById(
+      "featured"
+    ).checked;
 
   if(!name || !price){
 
-    alert("Nombre y precio son obligatorios");
+    alert(
+      "Nombre y precio son obligatorios"
+    );
 
     return;
 
   }
 
-  const formData = new FormData();
+  const formData =
+    new FormData();
 
   formData.append("name",name);
 
-  formData.append("description",description);
+  formData.append(
+    "description",
+    description
+  );
 
   formData.append("price",price);
 
-  formData.append("category",category);
+  formData.append(
+    "category",
+    category
+  );
 
-  formData.append("featured",featured);
+  formData.append(
+    "featured",
+    featured
+  );
 
 
   /* =========================
-  VARIANTES ERP
+  VARIANTES
   ========================= */
 
   let finalVariants = [];
@@ -405,7 +762,9 @@ async function createProduct(){
 
   });
 
-  if(variants.some(v=>v.image)){
+  if(
+    variants.some(v=>v.image)
+  ){
 
     formData.append(
       "image_colors",
@@ -422,11 +781,16 @@ async function createProduct(){
   ========================= */
 
   const image =
-    document.getElementById("image").files[0];
+    document.getElementById(
+      "image"
+    ).files[0];
 
   if(image){
 
-    formData.append("image",image);
+    formData.append(
+      "image",
+      image
+    );
 
   }
 
@@ -441,7 +805,8 @@ async function createProduct(){
 
   if(editingProduct){
 
-    url = `/products/${editingProduct}`;
+    url =
+      `/products/${editingProduct}`;
 
     method = "PUT";
 
@@ -450,19 +815,24 @@ async function createProduct(){
   const res = await fetch(
     `${API_URL}/api${url}`,
     {
-      method:method,
+
+      method,
 
       headers:{
-        Authorization:`Bearer ${token}`
+        Authorization:
+          `Bearer ${token}`
       },
 
       body:formData
+
     }
   );
 
   if(!res.ok){
 
-    alert("Error al guardar producto");
+    alert(
+      "Error al guardar producto"
+    );
 
     return;
 
@@ -475,11 +845,15 @@ async function createProduct(){
   renderVariants();
 
   document
-    .getElementById("product-form")
+    .getElementById(
+      "product-form"
+    )
     .reset();
 
   document
-    .getElementById("save-btn")
+    .getElementById(
+      "save-btn"
+    )
     .innerText = "Agregar";
 
   loadProducts();
@@ -503,15 +877,25 @@ function editProduct(
 
   editingProduct = id;
 
-  document.getElementById("name").value=name;
+  document.getElementById(
+    "name"
+  ).value = name;
 
-  document.getElementById("description").value=description;
+  document.getElementById(
+    "description"
+  ).value = description;
 
-  document.getElementById("price").value=price;
+  document.getElementById(
+    "price"
+  ).value = price;
 
-  document.getElementById("category").value=category;
+  document.getElementById(
+    "category"
+  ).value = category;
 
-  document.getElementById("featured").checked=featured;
+  document.getElementById(
+    "featured"
+  ).checked = featured;
 
   const grouped = {};
 
@@ -527,11 +911,14 @@ function editProduct(
 
         price: v.price,
 
-        stock: v.stock || 0,
+        stock:
+          v.stock || 0,
 
-        sku: v.sku || "",
+        sku:
+          v.sku || "",
 
-        cost: v.cost || 0,
+        cost:
+          v.cost || 0,
 
         image: null
 
@@ -539,17 +926,23 @@ function editProduct(
 
     }
 
-    grouped[v.color].sizes.push(v.size);
+    grouped[v.color]
+      .sizes
+      .push(v.size);
 
   });
 
-  variants = Object.values(grouped);
+  variants =
+    Object.values(grouped);
 
   renderVariants();
 
   document
-    .getElementById("save-btn")
-    .innerText = "Guardar cambios";
+    .getElementById(
+      "save-btn"
+    )
+    .innerText =
+      "Guardar cambios";
 
 }
 
@@ -561,11 +954,16 @@ ELIMINAR PRODUCTO
 async function deleteProduct(id){
 
   const ok =
-    confirm("¿Eliminar producto?");
+    confirm(
+      "¿Eliminar producto?"
+    );
 
   if(!ok) return;
 
-  await apiRequest(`/products/${id}`,"DELETE");
+  await apiRequest(
+    `/products/${id}`,
+    "DELETE"
+  );
 
   loadProducts();
 
@@ -577,7 +975,9 @@ INIT
 ========================= */
 
 window.editProduct = editProduct;
+
 window.deleteProduct = deleteProduct;
+
 window.createProduct = createProduct;
 
 loadProducts();

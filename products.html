@@ -105,7 +105,8 @@ gap:10px;
 align-items:center;
 }
 
-.form-row input{
+.form-row input,
+.form-row select{
 padding:10px;
 border:1px solid #d1d5db;
 border-radius:6px;
@@ -124,6 +125,44 @@ font-weight:500;
 
 .form-row button:hover{
 background:#1d4ed8;
+}
+
+
+/* FILTERS */
+
+.filters-card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+.filters-grid{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+align-items:center;
+}
+
+.filters-grid input,
+.filters-grid select{
+padding:10px;
+border:1px solid #d1d5db;
+border-radius:6px;
+min-width:180px;
+background:white;
+}
+
+.info-row{
+margin-top:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:10px;
+color:#475569;
+font-size:14px;
 }
 
 
@@ -203,6 +242,37 @@ font-weight:bold;
 }
 
 
+/* PAGINATION */
+
+.pagination{
+display:flex;
+justify-content:center;
+align-items:center;
+gap:10px;
+padding:20px;
+flex-wrap:wrap;
+}
+
+.pagination button{
+padding:10px 15px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.pagination button:disabled{
+opacity:0.5;
+cursor:not-allowed;
+}
+
+#page-info{
+font-weight:600;
+color:#334155;
+}
+
+
 /* RESPONSIVE */
 
 @media(max-width:900px){
@@ -233,18 +303,27 @@ height:auto;
 padding:15px;
 }
 
-.form-row{
+.form-row,
+.filters-grid{
 flex-direction:column;
 align-items:stretch;
 }
 
 .form-row input,
-.form-row button{
+.form-row button,
+.form-row select,
+.filters-grid input,
+.filters-grid select{
 width:100%;
 }
 
 .page-title{
 font-size:24px;
+}
+
+.info-row{
+flex-direction:column;
+align-items:flex-start;
 }
 
 }
@@ -427,6 +506,66 @@ Agregar variante
 </div>
 
 
+<!-- FILTERS ERP -->
+
+<div class="filters-card">
+
+<div class="filters-grid">
+
+<input
+type="text"
+id="search-product"
+placeholder="Buscar producto..."
+onkeyup="searchProducts()"
+>
+
+<select
+id="filter-category"
+onchange="filterByCategory()"
+>
+
+<option value="">
+Todas las categorías
+</option>
+
+</select>
+
+<select
+id="limit-products"
+onchange="changeLimit()"
+>
+
+<option value="10">
+10 productos
+</option>
+
+<option value="20">
+20 productos
+</option>
+
+<option value="50">
+50 productos
+</option>
+
+</select>
+
+</div>
+
+<div class="info-row">
+
+<div id="pagination-info">
+Mostrando productos
+</div>
+
+<div id="page-info">
+Página 1
+</div>
+
+</div>
+
+</div>
+
+
 <!-- TABLE -->
 
 <div class="table-card">
@@ -472,6 +611,31 @@ Acciones
 <tbody id="products-table"></tbody>
 
 </table>
+
+</div>
+
+
+<!-- PAGINATION -->
+
+<div class="pagination">
+
+<button
+id="prev-page"
+onclick="prevPage()"
+>
+Anterior
+</button>
+
+<div id="page-info">
+Página 1 de 1
+</div>
+
+<button
+id="next-page"
+onclick="nextPage()"
+>
+Siguiente
+</button>
 
 </div>
 
