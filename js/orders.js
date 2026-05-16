@@ -6,13 +6,14 @@ const token =
 
 if(!token){
 
-  window.location = "login.html";
+  window.location =
+    "login.html";
 
 }
 
 
 /* =========================
-LOAD ORDERS ERP
+GLOBAL DATA
 ========================= */
 
 let allOrders = [];
@@ -35,7 +36,7 @@ document.addEventListener(
 
 
 /* =========================
-GET ORDERS
+GET ORDERS ERP
 ========================= */
 
 async function loadOrders(){
@@ -53,13 +54,38 @@ async function loadOrders(){
     );
 
     const data =
-  await res.json();
+      await res.json();
 
-allOrders = data || [];
+    console.log(
+      "ORDERS RESPONSE:",
+      data
+    );
 
-    renderKPIs(allOrders);
 
-    renderOrders(allOrders);
+    /* =========================
+    FIX RESPONSE
+    ========================= */
+
+    allOrders =
+      data.orders || [];
+
+
+    /* =========================
+    KPIS
+    ========================= */
+
+    renderKPIs(
+      allOrders
+    );
+
+
+    /* =========================
+    TABLE
+    ========================= */
+
+    renderOrders(
+      allOrders
+    );
 
   }catch(err){
 
@@ -105,15 +131,18 @@ function renderKPIs(orders){
 
   document.getElementById(
     "total-orders"
-  ).innerText = totalOrders;
+  ).innerText =
+    totalOrders;
 
   document.getElementById(
     "pending-orders"
-  ).innerText = pending;
+  ).innerText =
+    pending;
 
   document.getElementById(
     "paid-orders"
-  ).innerText = paid;
+  ).innerText =
+    paid;
 
   document.getElementById(
     "total-sales"
@@ -124,7 +153,7 @@ function renderKPIs(orders){
 
 
 /* =========================
-RENDER ORDERS
+RENDER ORDERS ERP
 ========================= */
 
 function renderOrders(orders){
@@ -136,7 +165,10 @@ function renderOrders(orders){
 
   table.innerHTML = "";
 
-  if(orders.length === 0){
+  if(
+    !orders ||
+    orders.length === 0
+  ){
 
     table.innerHTML = `
     <tr>
@@ -158,32 +190,43 @@ function renderOrders(orders){
         <div class="product-item">
 
           <strong>
-            ${item.product_name}
+            ${item.product_name || "-"}
           </strong>
 
           <br>
 
-          ${item.variant_name}
+          ${item.variant_name || "-"}
 
           <br>
 
           Cantidad:
-          ${item.quantity}
+          ${item.quantity || 0}
 
           <br>
 
-          $${item.subtotal}
+          $${Number(
+            item.subtotal || 0
+          ).toFixed(2)}
 
         </div>
       `)
       .join("");
 
     const statusClass =
+
       order.status === "PAID"
+
       ? "status-paid"
-      : order.status === "CANCELLED"
+
+      :
+
+      order.status === "CANCELLED"
+
       ? "status-cancelled"
-      : "status-pending";
+
+      :
+
+      "status-pending";
 
     const createdAt =
       order.created_at
@@ -222,14 +265,18 @@ function renderOrders(orders){
       </td>
 
       <td>
-        $${Number(order.total || 0).toFixed(2)}
+
+        $${Number(
+          order.total || 0
+        ).toFixed(2)}
+
       </td>
 
       <td>
 
         <span class="status ${statusClass}">
 
-          ${order.status}
+          ${order.status || "-"}
 
         </span>
 
@@ -320,7 +367,9 @@ window.updateStatus =
       );
 
     if(!confirmAction){
+
       return;
+
     }
 
     const res = await fetch(
@@ -354,8 +403,11 @@ window.updateStatus =
     if(!res.ok){
 
       alert(
+
         data.error ||
+
         "Error actualizando pedido"
+
       );
 
       return;
@@ -363,8 +415,11 @@ window.updateStatus =
     }
 
     alert(
+
       data.message ||
+
       "Pedido actualizado"
+
     );
 
     loadOrders();
@@ -461,7 +516,7 @@ function applyFilters(){
 
 
   /* =========================
-  STATUS
+  STATUS FILTER
   ========================= */
 
   if(status){
@@ -473,6 +528,11 @@ function applyFilters(){
       );
 
   }
+
+
+  /* =========================
+  RENDER
+  ========================= */
 
   renderKPIs(filtered);
 
