@@ -11,7 +11,8 @@ const store =
 
 if (!store || !token) {
 
-  window.location = "login.html";
+  window.location =
+    "login.html";
 
 }
 
@@ -53,20 +54,34 @@ async function loadDashboardStats(){
 
   try {
 
-    // =========================
-    // PRODUCTS
-    // =========================
+    /* =========================
+    PRODUCTS
+    ========================= */
 
     const response =
       await getProducts(store);
 
+    console.log(
+      "PRODUCTS RESPONSE:",
+      response
+    );
+
     const products =
-      response.products || [];
+
+      response?.products
+
+      ||
+
+      response
+
+      ||
+
+      [];
 
 
-    // =========================
-    // ORDERS
-    // =========================
+    /* =========================
+    ORDERS
+    ========================= */
 
     const ordersRes =
       await fetch(
@@ -82,13 +97,18 @@ async function loadDashboardStats(){
     const ordersData =
       await ordersRes.json();
 
+    console.log(
+      "ORDERS DASHBOARD:",
+      ordersData
+    );
+
     orders =
       ordersData.orders || [];
 
 
-    // =========================
-    // TOTAL PRODUCTS
-    // =========================
+    /* =========================
+    TOTAL PRODUCTS
+    ========================= */
 
     const totalProducts =
       products.length || 0;
@@ -106,9 +126,9 @@ async function loadDashboardStats(){
     }
 
 
-    // =========================
-    // LOW STOCK
-    // =========================
+    /* =========================
+    LOW STOCK
+    ========================= */
 
     let lowStock = 0;
 
@@ -119,7 +139,9 @@ async function loadDashboardStats(){
 
       variants.forEach(v => {
 
-        if(Number(v.stock) <= 5){
+        if(
+          Number(v.stock) <= 5
+        ){
 
           lowStock++;
 
@@ -142,9 +164,9 @@ async function loadDashboardStats(){
     }
 
 
-    // =========================
-    // TOTAL ORDERS
-    // =========================
+    /* =========================
+    TOTAL ORDERS
+    ========================= */
 
     totalOrders =
       orders.length;
@@ -162,9 +184,9 @@ async function loadDashboardStats(){
     }
 
 
-    // =========================
-    // MONTH SALES
-    // =========================
+    /* =========================
+    MONTH SALES
+    ========================= */
 
     const now =
       new Date();
@@ -217,9 +239,9 @@ async function loadDashboardStats(){
     }
 
 
-    // =========================
-    // TOTAL REVENUE
-    // =========================
+    /* =========================
+    TOTAL REVENUE
+    ========================= */
 
     totalRevenue =
       orders.reduce(
@@ -246,9 +268,9 @@ async function loadDashboardStats(){
     }
 
 
-    // =========================
-    // AVG TICKET
-    // =========================
+    /* =========================
+    AVG TICKET
+    ========================= */
 
     averageTicket =
 
@@ -275,9 +297,9 @@ async function loadDashboardStats(){
     }
 
 
-    // =========================
-    // RECENT ORDERS
-    // =========================
+    /* =========================
+    RECENT ORDERS
+    ========================= */
 
     renderRecentOrders(
 
@@ -286,9 +308,9 @@ async function loadDashboardStats(){
     );
 
 
-    // =========================
-    // BEST SELLERS
-    // =========================
+    /* =========================
+    BEST SELLERS
+    ========================= */
 
     renderBestSellers(
       products
@@ -321,7 +343,10 @@ function renderRecentOrders(orders){
 
   table.innerHTML = "";
 
-  if(orders.length === 0){
+  if(
+    !orders ||
+    orders.length === 0
+  ){
 
     table.innerHTML = `
     
@@ -416,61 +441,74 @@ function renderBestSellers(products){
 
   container.innerHTML = "";
 
-  const sorted =
-    [...products]
+  if(
+    !products ||
+    products.length === 0
+  ){
 
-    .sort((a,b)=>{
+    container.innerHTML = `
+      <div class="best-product">
+        No hay productos
+      </div>
+    `;
 
-      const stockA =
-        (a.variants || [])
-        .reduce(
-          (acc,v)=>
-            acc + Number(v.stock || 0),
-          0
-        );
+    return;
 
-      const stockB =
-        (b.variants || [])
-        .reduce(
-          (acc,v)=>
-            acc + Number(v.stock || 0),
-          0
-        );
+  }
 
-      return stockA - stockB;
+  const featured =
+    products.filter(
+      p => p.featured === true
+    );
 
-    })
+  const productsToShow =
 
-    .slice(0,5);
+    featured.length > 0
 
-  sorted.forEach(product=>{
+    ?
 
-    const totalStock =
-      (product.variants || [])
-      .reduce(
-        (acc,v)=>
-          acc + Number(v.stock || 0),
-        0
-      );
+    featured
+
+    :
+
+    products.slice(0,5);
+
+  productsToShow.forEach(product=>{
+
+    const image =
+      product.image
+      ? `
+        <img
+          src="${product.image}"
+          style="
+            width:60px;
+            height:60px;
+            object-fit:cover;
+            border-radius:10px;
+            margin-bottom:10px;
+          "
+        >
+      `
+      : "";
 
     container.innerHTML += `
 
       <div class="best-product">
 
-        <div>
+        ${image}
 
-          <strong>
+        <strong>
 
-            ${product.name || "-"}
+          ${product.name || "-"}
 
-          </strong>
+        </strong>
 
-          <br>
+        <br><br>
 
-          Stock:
-          ${totalStock}
-
-        </div>
+        Precio:
+        $${Number(
+          product.price || 0
+        ).toLocaleString()}
 
       </div>
 
